@@ -9,7 +9,7 @@ import re
 db.drop_all()
 db.create_all()
 
-BASE_API_URL_1 = "https://www.dnd5eapi.co/api"
+BASE_API_URL = "https://www.dnd5eapi.co/api"
 
 CHALLENGE_RATINGS = [0, 0.125, 0.25, 0.5, *range(1, 31)]
 
@@ -32,7 +32,7 @@ def get_by_cr(cr: int):
         return False
 
     resp = requests.get(
-        f"{BASE_API_URL_1}/monsters",
+        f"{BASE_API_URL}/monsters",
         params={"challenge_rating": f"{cr}"}
     ).json()
 
@@ -63,7 +63,7 @@ def get_by_name(name: str):
     """Get a monster by its name."""
 
     resp = requests.get(
-        f"{BASE_API_URL_1}/monsters/{name}"
+        f"{BASE_API_URL}/monsters/{name}"
     ).json()
 
     if 'error' in resp.keys():
