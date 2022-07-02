@@ -27,4 +27,7 @@ connect_db(app)
 def root():
     """Homepage"""
 
-    return render_template('index.html')
+    monsters = Monster.query.filter( Monster.challenge_rating == 3 ).all()
+
+    return render_template('index.html', monsters=monsters)
+    

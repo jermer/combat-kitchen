@@ -2,10 +2,20 @@
 
 
 {% block title %}
-    Homepage
+Homepage
 {% endblock %}
 
 
 {% block content %}
-    Here's some content
+Here's a list of monsters...
+
+<ul>
+    {% if monsters %}
+    {% for m in monsters%}
+    <li>{{m.name}}</li>
+    {% endfor %}
+    {% else %}
+    <li>There are no monsters to show.</li>
+    {% endif%}
+</ul>
 {% endblock %}
