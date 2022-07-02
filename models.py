@@ -33,8 +33,8 @@ class Monster(db.Model):
     challenge_rating = db.Column(db.Float, nullable=False)
     xp = db.Column(db.Integer, nullable=False)
 
-    # special_abilities = db.relationship("SpecialAbility")
-    # actions = db.relationship("Action")
+    special_abilities = db.relationship("SpecialAbility")
+    actions = db.relationship("Action")
 
     @classmethod
     def columns(cls):
@@ -46,6 +46,11 @@ class Monster(db.Model):
         arr.remove('columns')
 
         return arr
+
+    def __repr__(self):
+        """Stringify a monster in a helpful way"""
+        
+        return( f"<Monster: {self.name}>" )
 
 
 class SpecialAbility(db.Model):
@@ -59,6 +64,11 @@ class SpecialAbility(db.Model):
     name = db.Column(db.String(50), nullable=False)
     desc = db.Column(db.Text, nullable=False)
 
+    def __repr__(self):
+        """Stringify a special ability in a helpful way"""
+        
+        return( f"<Special Ability: {self.name}>" )
+
 
 class Action(db.Model):
     """Model for monster actions"""
@@ -70,7 +80,11 @@ class Action(db.Model):
         'monsters.id', ondelete="CASCADE"))
     name = db.Column(db.String(50), nullable=False)
     desc = db.Column(db.Text, nullable=False)
-
+    
+    def __repr__(self):
+        """Stringify an action in a helpful way"""
+        
+        return( f"<Action: {self.name}>" )
 
 def connect_db(app):
     """Connect to database."""
