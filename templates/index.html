@@ -7,15 +7,81 @@ Homepage
 
 
 {% block content %}
-Here's a list of monsters...
+<h4>Filter Monsters</h4>
 
-<ul>
-    {% if monsters %}
-    {% for m in monsters%}
-    <li>{{m.name}}</li>
-    {% endfor %}
-    {% else %}
-    <li>There are no monsters to show.</li>
-    {% endif%}
-</ul>
+<form id="monster-filter-form" action="">
+    <!-- <label for="cr-input">Min CR: </label>
+    <input id="cr-input" type="number" min="0" max="30" value="0">
+
+    <label for="cr-input">Min CR: </label>
+    <input id="cr-input" type="number" min="0" max="30" value="0"> -->
+
+    <p>
+        <label for="amount">CR Range:</label>
+        <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
+    </p>
+    <div id="slider-range"></div>
+
+    <label for="type-input">Type: </label>
+    <select name="type" id="type-input">
+        <option value="">Any type</option>
+        <option value="dragon">Dragon</option>
+        <option value="giant">Giant</option>
+        <option value="undead">Undead</option>
+    </select>
+    <div>
+        <button class="btn btn-primary btn-sm">Submit</button>
+    </div>
+</form>
+
+<hr>
+
+<hr>
+
+<h4>Monster List</h4>
+
+{% if monsters %}
+<table class="table table-hover">
+    <thead class="table-light">
+        <tr>
+            <th scope="col">Name</th>
+            <th scope="col">Size</th>
+            <th scope="col">CR</th>
+            <th scope="col">Type</th>
+        </tr>
+    </thead>
+    <tbody id="monster-table">
+        <!-- {% for m in monsters%}
+        <tr scope="row">
+            <td>{{m.name}}</td>
+            <td>{{m.size}}</td>
+            <td>{{m.cr()}}</td>
+            <td>{{m.type}}{% if m.subtype %} ({{m.subtype}}){% endif %}</td>
+        </tr>
+        {% endfor %} -->
+    </tbody>
+</table>
+{% else %}
+There are no monsters to show.
+{% endif %}
+
+<nav aria-label="Monster list navigation">
+    <ul class="pagination justify-content-center">
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item"><a class="page-link" href="#">1</a></li>
+        <li class="page-item"><a class="page-link" href="#">2</a></li>
+        <li class="page-item"><a class="page-link" href="#">3</a></li>
+        <li class="page-item">
+            <a class="page-link" href="#" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+    </ul>
+</nav>
+
+
 {% endblock %}

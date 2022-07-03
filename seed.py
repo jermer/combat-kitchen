@@ -39,6 +39,13 @@ def get_by_cr(cr: int):
     print(f"*** API returned {resp.get('count')} results ***")
 
     for m in resp.get('results'):
+        
+        #
+        #
+        # JUST USE INDEX DERP
+        #
+        #
+
         name = m.get('name')
         print(f"Fetching monster: {name}")
 

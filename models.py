@@ -52,6 +52,27 @@ class Monster(db.Model):
         
         return( f"<Monster: {self.name}>" )
 
+    def serialize(self):
+        """Turn monster object into dictionary"""
+        return {
+            'id': self.id,
+            'name': self.name,
+            'size': self.size,
+            'type': self.type,
+            'subtype': self.subtype,
+            'cr': self.cr()
+        }
+
+    def cr(self):
+        if self.challenge_rating == 0.125:
+            return "1/8"
+        elif self.challenge_rating == 0.25:
+            return "1/4"
+        elif self.challenge_rating == 0.5:
+            return "1/2"
+        else:
+            return str(int(self.challenge_rating))
+
 
 class SpecialAbility(db.Model):
     """Model for monster special abilities"""
@@ -91,3 +112,17 @@ def connect_db(app):
 
     db.app = app
     db.init_app(app)
+
+
+##
+## To add "legendary"
+## To check for "recharge" type actions
+##
+
+
+# class LegendaryActions(db.Model):
+#     """Model for legendary actions"""
+#     __tablename__ = "legendary_actions"
+#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+#     monster_id = db.Column(db.Integer, ForeignKey(
+#         'monsters.id', ondelete="CASCADE"))
