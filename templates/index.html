@@ -24,10 +24,10 @@ Homepage
 
     <label for="type-input">Type: </label>
     <select name="type" id="type-input">
-        <option value="">Any type</option>
-        <option value="dragon">Dragon</option>
-        <option value="giant">Giant</option>
-        <option value="undead">Undead</option>
+        <option value="">any type</option>
+        {% for t in monster_types %}
+        <option value="{{t}}">{{t}}</option>
+        {% endfor %}
     </select>
     <div>
         <button class="btn btn-primary btn-sm">Submit</button>

@@ -38,7 +38,7 @@ class Monster(db.Model):
 
     @classmethod
     def columns(cls):
-        """Return a list of class properties"""
+        """Return a list of monster class properties"""
 
         arr = [k for k in Monster.__dict__.keys()
                if not k.startswith('_')]
@@ -47,10 +47,19 @@ class Monster(db.Model):
 
         return arr
 
+    @classmethod
+    def types(cls):
+        """Return a list of monster types present in the db"""
+
+        result = Monster.query.with_entities(
+            Monster.type).group_by(Monster.type).all()
+        result = [t[0] for t in result]
+        return result
+
     def __repr__(self):
         """Stringify a monster in a helpful way"""
-        
-        return( f"<Monster: {self.name}>" )
+
+        return(f"<Monster: {self.name}>")
 
     def serialize(self):
         """Turn monster object into dictionary"""
@@ -87,8 +96,8 @@ class SpecialAbility(db.Model):
 
     def __repr__(self):
         """Stringify a special ability in a helpful way"""
-        
-        return( f"<Special Ability: {self.name}>" )
+
+        return(f"<Special Ability: {self.name}>")
 
 
 class Action(db.Model):
@@ -101,11 +110,12 @@ class Action(db.Model):
         'monsters.id', ondelete="CASCADE"))
     name = db.Column(db.String(50), nullable=False)
     desc = db.Column(db.Text, nullable=False)
-    
+
     def __repr__(self):
         """Stringify an action in a helpful way"""
-        
-        return( f"<Action: {self.name}>" )
+
+        return(f"<Action: {self.name}>")
+
 
 def connect_db(app):
     """Connect to database."""
@@ -115,8 +125,8 @@ def connect_db(app):
 
 
 ##
-## To add "legendary"
-## To check for "recharge" type actions
+# To add "legendary"
+# To check for "recharge" type actions
 ##
 
 

@@ -37,7 +37,7 @@ def root():
                 .order_by(Monster.name)
                 .limit(10))
 
-    return render_template('index.html', monsters=monsters)
+    return render_template('index.html', monsters=monsters, monster_types = Monster.types())
 
 
 # API FUNCTIONALITY
