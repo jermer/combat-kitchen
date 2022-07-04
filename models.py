@@ -51,8 +51,11 @@ class Monster(db.Model):
     def types(cls):
         """Return a list of monster types present in the db"""
 
-        result = Monster.query.with_entities(
-            Monster.type).group_by(Monster.type).all()
+        result = (Monster.query
+                  .with_entities(Monster.type)
+                  .group_by(Monster.type)
+                  .order_by(Monster.type)
+                  .all())
         result = [t[0] for t in result]
         return result
 
@@ -81,6 +84,14 @@ class Monster(db.Model):
             return "1/2"
         else:
             return str(int(self.challenge_rating))
+
+    def mod(self, attr):
+        if attr % 2 == 1:
+            attr -= 1
+
+        attr = int((attr-10)/2)
+
+        return (str(attr) if attr < 0 else f"+{attr}")
 
 
 class SpecialAbility(db.Model):

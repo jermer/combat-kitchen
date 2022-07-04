@@ -37,7 +37,16 @@ def root():
                 .order_by(Monster.name)
                 .limit(10))
 
-    return render_template('index.html', monsters=monsters, monster_types = Monster.types())
+    return render_template('index.html', monsters=monsters, monster_types=Monster.types())
+
+
+@app.route("/monster/<monster_id>")
+def show_monster(monster_id):
+    """Render a monster stat sheet"""
+
+    m = Monster.query.get_or_404(monster_id)
+
+    return render_template('monster.html', monster=m)
 
 
 # API FUNCTIONALITY
@@ -51,6 +60,8 @@ def get_monsters():
     max_cr = request.args['max_cr']
 
     type = request.args.get('type', None)
+
+    # results_per_page = request.args.get('results_per_page', 10)
 
     query = db.session.query(Monster)
 
@@ -70,7 +81,8 @@ def get_monsters():
     #             .limit(10)
     #             )
 
-    monsters = query.order_by(Monster.name).limit(10)
+    monsters = query.order_by(Monster.name).all()
+    # limit(results_per_page)
 
-    serialized=[m.serialize() for m in monsters]
+    serialized = [m.serialize() for m in monsters]
     return jsonify(monsters=serialized)

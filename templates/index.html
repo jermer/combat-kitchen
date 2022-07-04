@@ -16,19 +16,32 @@ Homepage
     <label for="cr-input">Min CR: </label>
     <input id="cr-input" type="number" min="0" max="30" value="0"> -->
 
-    <p>
-        <label for="amount">CR Range:</label>
-        <input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;">
-    </p>
-    <div id="slider-range"></div>
+    <div>
+        <label for="amount" class="form-label">CR Range:</label>
+        <input id="amount" type="text" class="form-label text-primary" readonly style="border:0; font-weight:bold;">
+        <div id="slider-range" class="form-control"></div>
+    </div>
 
-    <label for="type-input">Type: </label>
-    <select name="type" id="type-input">
-        <option value="">any type</option>
-        {% for t in monster_types %}
-        <option value="{{t}}">{{t}}</option>
-        {% endfor %}
-    </select>
+    <div>
+        <label for="type-input" class="form-label">Type: </label>
+        <select name="type" id="type-input" class="form-control">
+            <option value="">any type</option>
+            {% for t in monster_types %}
+            <option value="{{t}}">{{t}}</option>
+            {% endfor %}
+        </select>
+    </div>
+
+    <div>
+        <label for="results-per-page-input"></label>
+        <select name="results-per-page" id="results-per-page-input" class="form-control">
+            <option value="10">10 per page</option>
+            <option value="25">25 per page</option>
+            <option value="50">50 per page</option>
+            <option value="100">100 per page</option>
+        </select>
+    </div>
+
     <div>
         <button class="btn btn-primary btn-sm">Submit</button>
     </div>
@@ -36,29 +49,33 @@ Homepage
 
 <hr>
 
-<hr>
-
 <h4>Monster List</h4>
 
 {% if monsters %}
-<table class="table table-hover">
+<table id="monster-table" class="table table-hover">
     <thead class="table-light">
         <tr>
+            <th scope="col"></th>
             <th scope="col">Name</th>
             <th scope="col">Size</th>
             <th scope="col">CR</th>
             <th scope="col">Type</th>
         </tr>
     </thead>
-    <tbody id="monster-table">
-        <!-- {% for m in monsters%}
-        <tr scope="row">
+    <tbody id="monster-table-body">
+
+        <!--
+        {% for m in monsters %}
+        <tr>
+            <td><i class="fa-solid fa-eye monster-detail" ></i></td></th>
             <td>{{m.name}}</td>
             <td>{{m.size}}</td>
             <td>{{m.cr()}}</td>
-            <td>{{m.type}}{% if m.subtype %} ({{m.subtype}}){% endif %}</td>
+            <td>{{m.type}}</td>
         </tr>
-        {% endfor %} -->
+        {% endfor %}
+        -->
+
     </tbody>
 </table>
 {% else %}
@@ -68,20 +85,49 @@ There are no monsters to show.
 <nav aria-label="Monster list navigation">
     <ul class="pagination justify-content-center">
         <li class="page-item">
+            <button id="table-prev-btn" class="page-link" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </button>
+<!-- 
             <a class="page-link" href="#" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
+ -->
         </li>
+        <!--
         <li class="page-item"><a class="page-link" href="#">1</a></li>
         <li class="page-item"><a class="page-link" href="#">2</a></li>
         <li class="page-item"><a class="page-link" href="#">3</a></li>
+        -->
         <li class="page-item">
+            <button id="table-next-btn" class="page-link" aria-label="Previous">
+                <span aria-hidden="true">&raquo;</span>
+            </button>
+<!-- 
             <a class="page-link" href="#" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
+ -->
         </li>
     </ul>
 </nav>
 
+<!-- 
 
-{% endblock %}
+{% for monster in monsters %}
+
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMonster{{monster.id}}" aria-labelledby="offcanvasMonster">
+    <div class="offcanvas-header">
+        <h5 id="offcanvasMonster">Monster Detail</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        {% include 'mon.html' %}
+    </div>
+</div>
+
+{% endfor %}
+
+ -->
+
+{% endblock content %}
