@@ -14,23 +14,33 @@ class MonsterTable {
         this.monsters = [];
     }
 
+    async updateSettings(minCR, maxCR, type, resultsPerPage) {
+        this.minCR = minCR;
+        this.maxCR = maxCR;
+        this.type = type;
+
+        this.page = 1;
+        this.resultsPerPage = resultsPerPage;
+
+        await this.queryMonsters();
+        this.updateView();
+    }
+
     /*
      *   Query the API based on the current settings
      */
     async queryMonsters() {
         const params = {
             min_cr: this.minCR,
-            max_cr: this.maxCR
+            max_cr: this.maxCR,
+            type: this.type
         }
 
         // get updated monster list from the api
         const resp = await axios.get(`http://localhost:5000/api/monsters`, { params: params });
 
-        this.monsters = JSON.parse(JSON.stringify(resp.data.monsters));
-
-        console.log(resp.data.monsters[0]);
-        console.log(this.monsters[0]);
-
+        // this.monsters = JSON.parse(JSON.stringify(resp.data.monsters));
+        this.monsters = resp.data.monsters;
     }
 
     /*
@@ -39,6 +49,24 @@ class MonsterTable {
     updateView() {
         // render the new table
         this.renderMonsterTable(this.monsters)
+
+        console.debug(`page = ${this.page}`)
+
+        // update pagination buttons
+        if (this.page === 1) {
+            $('#table-prev-btn').parent().addClass('disabled');
+        }
+        else {
+            $('#table-prev-btn').parent().removeClass('disabled');
+        }
+
+        const maxPages = Math.ceil(this.monsters.length / this.resultsPerPage);
+        if (this.page === maxPages) {
+            $('#table-next-btn').parent().addClass('disabled');
+        }
+        else {
+            $('#table-next-btn').parent().removeClass('disabled');
+        }
     }
 
     /* 
@@ -57,9 +85,8 @@ class MonsterTable {
         // determine starting monster based on pagination
         const start = (this.page - 1) * (this.resultsPerPage);
 
-        for (let i = 0; i < this.resultsPerPage; i++) {
+        for (let i = 0; i < this.resultsPerPage && start+i < monsters.length; i++) {
             let m = monsters[start + i];
-            console.log(m.name);
             this.HTMLtable.append(this.renderMonsterTableRow(m));
         }
     }
@@ -81,13 +108,16 @@ class MonsterTable {
      *  Logic for pagination
      */
     showNextPage() {
+        console.debug("page ++");
+        // debugger;
         this.page++;
-        this.updateView()
+        this.updateView();
     }
 
     showPrevPage() {
-        this.page = this.page > 1 ? this.page - 1 : 1
-        this.updateView()
+        console.debug("page --");
+        this.page--;
+        this.updateView();
     }
 }
 
@@ -99,9 +129,7 @@ var MONSTER_TABLE;
 
 $(document).ready(async function () {
     MONSTER_TABLE = new MonsterTable();
-    // debugger;
     await MONSTER_TABLE.queryMonsters();
-    // debugger;
     MONSTER_TABLE.updateView();
 });
 
@@ -123,32 +151,47 @@ $('#table-next-btn').on("click", function (e) {
  */
 $('#monster-filter-form').submit(handleFormSubmit)
 
+$("#results-per-page-input").on("change", handleFormSubmit)
+$("#type-input").on("change", handleFormSubmit)
+$("#amount").on("change", handleFormSubmit)
+
+
 async function handleFormSubmit(evt) {
     evt.preventDefault();
-    $('#monster-table-body').empty()
 
-    // const cr = $('#cr-input').val();
+    // CUTTING -- let the rendering handle this
+    //$('#monster-table-body').empty()
 
     const minCR = translateSliderRange($("#slider-range").slider("values", 0))[0];
     const maxCR = translateSliderRange($("#slider-range").slider("values", 1))[0];
 
     const type = $("#type-input").val();
 
-    // const resultsPerPage = $("#results-per-page-input").val();
+    const resultsPerPage = $("#results-per-page-input").val();
 
-    // console.log(`Form submitted with CR = ${cr}`);
-    console.log(`Form submitted with CR range = ${minCR} - ${maxCR} and type = ${type}`);
+    console.debug(`Form submitted with:
+        \n-- CR range = ${minCR} - ${maxCR}
+        \n-- type = ${type}
+        \n-- results per page = ${resultsPerPage}
+        `);
 
-    const params = {
-        min_cr: minCR,
-        max_cr: maxCR,
-        type: type
-        // results_per_page: resultsPerPage
-    }
+    MONSTER_TABLE.updateSettings(
+        minCR,
+        maxCR,
+        type,
+        resultsPerPage
+    );
 
-    const resp = await axios.get(`http://localhost:5000/api/monsters`, { params: params });
+    // const params = {
+    //     min_cr: minCR,
+    //     max_cr: maxCR,
+    //     type: type
+    //     // results_per_page: resultsPerPage
+    // }
 
-    renderMonsterTable(resp.data.monsters)
+    // const resp = await axios.get(`http://localhost:5000/api/monsters`, { params: params });
+
+    // renderMonsterTable(resp.data.monsters)
 }
 
 
@@ -190,6 +233,7 @@ $("#slider-range").slider({
     slide: function (event, ui) {
         // $("#amount").val(ui.values[0] + " - " + ui.values[1]);
         $("#amount").val(translateSliderRange(ui.values[0])[1] + " - " + translateSliderRange(ui.values[1])[1]);
+        $("#amount").change();
     }
 });
 // $("#amount").val($("#slider-range").slider("values", 0) +

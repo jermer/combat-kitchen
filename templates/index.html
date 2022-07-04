@@ -10,25 +10,30 @@ Homepage
 <h4>Filter Monsters</h4>
 
 <form id="monster-filter-form" action="">
-    <div>
-        <label for="amount" class="form-label">CR Range:</label>
+    <div class="mb-3">
+        <label for="amount" class="form-label">Challenge Rating: </label>
         <input id="amount" type="text" class="form-label text-primary" readonly style="border:0; font-weight:bold;">
-        <div id="slider-range" class="form-control"></div>
+        <div class="mx-5">
+            <div id="slider-range" class="form-control form-range"></div>
+        </div>
     </div>
 
     <div>
         <label for="type-input" class="form-label">Type: </label>
-        <select name="type" id="type-input" class="form-control">
-            <option value="">any type</option>
-            {% for t in monster_types %}
-            <option value="{{t}}">{{t}}</option>
-            {% endfor %}
-        </select>
+        <div class="mx-5">
+            <select name="type" id="type-input" class="form-control">
+                <option value="">any type</option>
+                {% for t in monster_types %}
+                <option value="{{t}}">{{t}}</option>
+                {% endfor %}
+            </select>
+        </div>
     </div>
 
     <div>
-        <label for="results-per-page-input"></label>
+        <label for="results-per-page-input" class="form-label"></label>
         <select name="results-per-page" id="results-per-page-input" class="form-control">
+            <option value="5">5 per page</option>
             <option value="10">10 per page</option>
             <option value="25">25 per page</option>
             <option value="50">50 per page</option>
@@ -36,9 +41,11 @@ Homepage
         </select>
     </div>
 
+    <!-- UPDATING form on "change", so don't need submit.     
     <div>
         <button class="btn btn-primary btn-sm">Submit</button>
-    </div>
+    </div> -->
+
 </form>
 
 <hr>
@@ -82,7 +89,7 @@ There are no monsters to show.
             <button id="table-prev-btn" class="page-link" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </button>
-<!-- 
+            <!-- 
             <a class="page-link" href="#" aria-label="Previous">
                 <span aria-hidden="true">&laquo;</span>
             </a>
@@ -97,7 +104,7 @@ There are no monsters to show.
             <button id="table-next-btn" class="page-link" aria-label="Previous">
                 <span aria-hidden="true">&raquo;</span>
             </button>
-<!-- 
+            <!-- 
             <a class="page-link" href="#" aria-label="Next">
                 <span aria-hidden="true">&raquo;</span>
             </a>
