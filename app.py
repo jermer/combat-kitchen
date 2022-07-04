@@ -53,15 +53,12 @@ def show_monster(monster_id):
 
 @app.route("/api/monsters")
 def get_monsters():
-    """Get monsters from the database"""
+    """Get monsters from the database according to filters in the query string"""
 
-    # cr = int(request.args['cr'])
     min_cr = request.args['min_cr']
     max_cr = request.args['max_cr']
 
     type = request.args.get('type', None)
-
-    # results_per_page = request.args.get('results_per_page', 10)
 
     query = db.session.query(Monster)
 
@@ -71,18 +68,7 @@ def get_monsters():
     if type:
         query = query.filter(Monster.type == type)
 
-    # monsters = (Monster.query
-    #             .filter(
-    #                 Monster.challenge_rating >= min_cr,
-    #                 Monster.challenge_rating <= max_cr,
-    #                 Monster.type == type
-    #             )
-    #             .order_by(Monster.name)
-    #             .limit(10)
-    #             )
-
     monsters = query.order_by(Monster.name).all()
-    # limit(results_per_page)
 
     serialized = [m.serialize() for m in monsters]
     return jsonify(monsters=serialized)

@@ -2,7 +2,7 @@
 class MonsterTable {
 
     constructor() {
-        this.page = 2;
+        this.page = 1;
         this.resultsPerPage = 5;
 
         this.minCR = 0;
@@ -14,9 +14,9 @@ class MonsterTable {
         this.monsters = [];
     }
 
-    //
-    // Query the API based on the current settings
-    //
+    /*
+     *   Query the API based on the current settings
+     */
     async queryMonsters() {
         const params = {
             min_cr: this.minCR,
@@ -28,16 +28,22 @@ class MonsterTable {
 
         this.monsters = JSON.parse(JSON.stringify(resp.data.monsters));
 
-        console.log( resp.data.monsters[0] );
-        console.log( this.monsters[0] );
+        console.log(resp.data.monsters[0]);
+        console.log(this.monsters[0]);
 
     }
 
+    /*
+     *  Update the UI
+     */
     updateView() {
-        // render the result
+        // render the new table
         this.renderMonsterTable(this.monsters)
     }
 
+    /* 
+     *  Update the monster table
+     */
     renderMonsterTable(monsters) {
         // empty the table
         this.HTMLtable.empty();
@@ -58,6 +64,9 @@ class MonsterTable {
         }
     }
 
+    /*
+     *  Render HTML for a table row
+     */
     renderMonsterTableRow(monster) {
         return (`<tr scope="row" data-mid="${monster.id}">
             <td><i class="fa-solid fa-eye monster-detail" ></i></td>
@@ -68,6 +77,9 @@ class MonsterTable {
         </tr>`)
     }
 
+    /* 
+     *  Logic for pagination
+     */
     showNextPage() {
         this.page++;
         this.updateView()
@@ -79,9 +91,10 @@ class MonsterTable {
     }
 }
 
-//
-//  On page load, instantiate a new MonsterTable and populate monster list
-//
+
+/*
+ *  On page load, instantiate a new MonsterTable and populate monster list
+ */
 var MONSTER_TABLE;
 
 $(document).ready(async function () {
@@ -93,9 +106,9 @@ $(document).ready(async function () {
 });
 
 
-//
-//  PAGINATION BUTTONS
-//
+/*
+ *  PAGINATION BUTTONS
+ */
 $('#table-prev-btn').on("click", function (e) {
     MONSTER_TABLE.showPrevPage(e)
 });
@@ -105,8 +118,9 @@ $('#table-next-btn').on("click", function (e) {
 });
 
 
-// HANDLE THE FORM
-
+/*
+ *  SEARCH FORM
+ */
 $('#monster-filter-form').submit(handleFormSubmit)
 
 async function handleFormSubmit(evt) {
@@ -157,9 +171,15 @@ $("#monster-table tbody").on("click", "i", detail)
 */
 
 
-
-
-
+/*
+ *  CHALLENGE RATING DOUBLE-ENDED SLIDER
+ */
+const FRACTION_CRS = [
+    [0.5, "1/2"],
+    [0.25, "1/4"],
+    [0.125, "1/8"],
+    [0, "0"]
+]
 
 $("#slider-range").slider({
     range: true,
@@ -185,10 +205,3 @@ function translateSliderRange(val) {
         return FRACTION_CRS[-val];
     }
 }
-
-const FRACTION_CRS = [
-    [0.5, "1/2"],
-    [0.25, "1/4"],
-    [0.125, "1/8"],
-    [0, "0"]
-]
