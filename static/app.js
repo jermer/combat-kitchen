@@ -108,14 +108,11 @@ class MonsterTable {
      *  Logic for pagination
      */
     showNextPage() {
-        console.debug("page ++");
-        // debugger;
         this.page++;
         this.updateView();
     }
 
     showPrevPage() {
-        console.debug("page --");
         this.page--;
         this.updateView();
     }
