@@ -40,37 +40,18 @@ def get_by_cr(cr: int):
 
     for m in resp.get('results'):
         
-        #
-        #
-        # JUST USE INDEX DERP
-        #
-        #
-
         name = m.get('name')
+        index = m.get('index')
+
         print(f"Fetching monster: {name}")
-
-        # the name requires some processing for api
-        # -- remove " Form" from monster that end with this string, e.g., "Werewolf, Human Form"
-        if name.endswith(' Form'):
-            name = name.replace(' Form', '')
-
-        # -- replace spaces with dashes
-        # -- remove special characters (),/'
-        d = {**{ord(x): "-" for x in " /"}, **{ord(x): "" for x in ",()'"}}
-        name = name.translate(d)
-
-        # -- convert to all lower case
-        name = name.lower()
-
-        # print(name)
-        get_by_name(name)
+        get_by_index(index)
 
 
-def get_by_name(name: str):
+def get_by_index(idx: str):
     """Get a monster by its name."""
 
     resp = requests.get(
-        f"{BASE_API_URL}/monsters/{name}"
+        f"{BASE_API_URL}/monsters/{idx}"
     ).json()
 
     if 'error' in resp.keys():
