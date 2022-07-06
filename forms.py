@@ -1,9 +1,10 @@
+
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField
 from wtforms.validators import DataRequired, Email, Length
 
 
-class UserAddForm(FlaskForm):
+class SignupForm(FlaskForm):
     """Form for adding new user."""
 
     username = StringField(
