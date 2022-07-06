@@ -1,10 +1,41 @@
 from flask_wtf import FlaskForm
-from wtforms import BooleanField, IntegerField, SelectField, StringField, TextAreaField
-from wtforms.validators import AnyOf, InputRequired, NumberRange, Optional, URL
+from wtforms import StringField, PasswordField
+from wtforms.validators import DataRequired, Email, Length
 
 
-class MonsterFilterForm(FlaskForm):
-    """Form for filtering monsters"""
+class UserAddForm(FlaskForm):
+    """Form for adding new user."""
 
-    name = StringField("Name", validators=[InputRequired()])
-    
+    username = StringField(
+        'Username',
+        validators=[DataRequired()]
+    )
+
+    email = StringField(
+        'E-mail',
+        validators=[DataRequired(),
+                    Email()]
+    )
+
+    password = PasswordField('Password',
+                             validators=[Length(min=6)]
+                             )
+
+
+class LoginForm(FlaskForm):
+    """Login form."""
+
+    username = StringField(
+        'Username',
+        validators=[DataRequired()]
+    )
+
+    password = PasswordField(
+        'Password',
+        validators=[DataRequired()]
+    )
+
+
+#
+# Also "edit user form?"
+#

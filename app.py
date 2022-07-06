@@ -1,11 +1,12 @@
 from flask import Flask, jsonify, redirect, render_template, request
-from models import Monster
+from flask_debugtoolbar import DebugToolbarExtension
+from flask_login import LoginManager
+
 import requests
 
-from flask_debugtoolbar import DebugToolbarExtension
-
-from models import db, connect_db  # , Playlist, Song, PlaylistSong
-# from forms import NewSongForPlaylistForm, SongForm, PlaylistForm
+from models import Monster, User
+from models import db, connect_db
+# from forms import ...
 
 app = Flask(__name__)
 
@@ -13,10 +14,18 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///monsters'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 
-app.config['SECRET_KEY'] = "private_private_private"
+app.config['SECRET_KEY'] = "41ee5473cf593c326eacf023b409199c2e3a118f2e8051afbcdb9f7e4c48e406"
 
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
+
+
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 
 connect_db(app)

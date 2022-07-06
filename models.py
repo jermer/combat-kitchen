@@ -8,12 +8,12 @@
 ##
 
 
-from ast import For
-from unicodedata import name
+from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
+bcrypt = Bcrypt()
+
 
 def connect_db(app):
     """Connect to database."""
@@ -119,11 +119,28 @@ class SpecialAbility(db.Model):
 
     __tablename__ = "special_abilities"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    monster_id = db.Column(db.Integer, ForeignKey(
-        'monsters.id', ondelete="CASCADE"))
-    name = db.Column(db.String(50), nullable=False)
-    desc = db.Column(db.Text, nullable=False)
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    monster_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            'monsters.id',
+            ondelete="CASCADE")
+    )
+
+    name = db.Column(
+        db.String(50),
+        nullable=False
+    )
+
+    desc = db.Column(
+        db.Text,
+        nullable=False
+    )
 
     def __repr__(self):
         """Stringify a special ability in a helpful way"""
@@ -136,11 +153,28 @@ class Action(db.Model):
 
     __tablename__ = "actions"
 
-    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    monster_id = db.Column(db.Integer, ForeignKey(
-        'monsters.id', ondelete="CASCADE"))
-    name = db.Column(db.String(50), nullable=False)
-    desc = db.Column(db.Text, nullable=False)
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    monster_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            'monsters.id',
+            ondelete="CASCADE")
+    )
+
+    name = db.Column(
+        db.String(50),
+        nullable=False
+    )
+
+    desc = db.Column(
+        db.Text,
+        nullable=False
+    )
 
     def __repr__(self):
         """Stringify an action in a helpful way"""
@@ -156,14 +190,84 @@ class Action(db.Model):
 #         'monsters.id', ondelete="CASCADE"))
 
 
-# class User (db.Model):
-#     """Model for users"""
+class User (db.Model):
+    """Model for users"""
 
-#     __tablename__ = "users"
+    __tablename__ = "users"
 
-#     id = db.Column( db.Integer, primary_key=True, autoincrement=True )
-#     email = db.Column( db.String(50), nullable=False )
-#     password = db.Column( db.Text, nullable=False )
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    email = db.Column(
+        db.String(50),
+        nullable=False,
+        unique=True
+    )
+
+    username = db.Column(
+        db.String(50),
+        nullable=False,
+        unique=True
+    )
+
+    password = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    @property
+    def is_authenticated(self):
+        return self.is_active
+
+    @property
+    def is_active(self):
+        return True
+
+    @property
+    def is_anonymous(self):
+        return False
+
+    def get_id(self):
+        return str(self.id)
+
+    def __repr__(self):
+        """Stringify users in a helpful way"""
+
+        return f"<User #{self.id}: {self.email}>"
+
+    @classmethod
+    def signup(cls, email, username, password):
+        """Sign up new user."""
+
+        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
+
+        user = User(
+            email=email,
+            username=username,
+            password=hashed_pwd,
+        )
+
+        db.session.add(user)
+        return user
+
+    @classmethod
+    def authenticate(cls, username, password):
+        """Find user with `username` and `password` and return that user object.
+
+        If a matching user cannot be found (or if password is wrong), returns False.
+        """
+
+        user = cls.query.filter_by(username=username).first()
+
+        if user:
+            is_auth = bcrypt.check_password_hash(user.password, password)
+            if is_auth:
+                return user
+
+        return False
 
 
 # class Encounter(db.Model):
@@ -172,7 +276,7 @@ class Action(db.Model):
 #     __tablename__ = "encounters"
 
 #     id = db.Column( db.Integer, primary_key=True, autoincrement=True )
-#     user_id = db.Column( db.Integer, ForeignKey('users.id'), ondelete="CASCADE")
+#     user_id = db.Column( db.Integer, db.ForeignKey('users.id'), ondelete="CASCADE")
 #     name = db.Column( db.String(50) )
 
 
@@ -181,6 +285,6 @@ class Action(db.Model):
 
 #     __tablename__ = "encounters_monsters"
 
-#     encounter_id = db.Column( db.Integer, ForeignKey('encounters.id', ondelete="CASCADE") )
-#     monster_id = db.Column( db.Integer, ForeignKey('monsters.id'), ondelete="CASCADE" )
+#     encounter_id = db.Column( db.Integer, db.ForeignKey('encounters.id', ondelete="CASCADE") )
+#     monster_id = db.Column( db.Integer, db.ForeignKey('monsters.id'), ondelete="CASCADE" )
 #     frequency = db.Column( db.Integer, nullable=False, default=1 )
