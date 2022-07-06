@@ -13,6 +13,12 @@ BASE_API_URL = "https://www.dnd5eapi.co/api"
 
 CHALLENGE_RATINGS = [0, 0.125, 0.25, 0.5, *range(1, 31)]
 
+def get_all_monsters():
+    """Get all the monsters"""
+
+    for cr in CHALLENGE_RATINGS:
+        get_by_cr( cr )
+
 
 def get_by_cr_range(min_cr: int, max_cr: int):
     """Get all monsters with challenge ratings between min_cr and max_cr (inclusive)."""
@@ -36,19 +42,19 @@ def get_by_cr(cr: int):
         params={"challenge_rating": f"{cr}"}
     ).json()
 
-    print(f"*** API returned {resp.get('count')} results ***")
+    # print(f"*** API returned {resp.get('count')} results ***")
 
     for m in resp.get('results'):
         
         name = m.get('name')
         index = m.get('index')
 
-        print(f"Fetching monster: {name}")
+        # print(f"Fetching monster: {name}")
         get_by_index(index)
 
 
 def get_by_index(idx: str):
-    """Get a monster by its name."""
+    """Get a monster by its index (name)."""
 
     resp = requests.get(
         f"{BASE_API_URL}/monsters/{idx}"
@@ -57,9 +63,12 @@ def get_by_index(idx: str):
     if 'error' in resp.keys():
         return False
 
+    # to allow for easier parsing of the remaining fields, we
+    # save these fields and remove them from the list
     special_abilities = resp.pop('special_abilities', None)
     actions = resp.pop('actions', None)
 
+    # create a new monster using all of the fields on the model
     new_monster = Monster(
         **{k: resp[k] for k in Monster.columns() if k in resp}
     )
@@ -67,6 +76,8 @@ def get_by_index(idx: str):
     db.session.add(new_monster)
     db.session.commit()
 
+    # now that the monster exists in the database, we go back and
+    # create entities related to the two fields we saved earlier
     if special_abilities:
         for sa in special_abilities:
             db.session.add(

@@ -1,10 +1,25 @@
 """Models for Monster app."""
 
+##
+# TO DO...
+#
+# Add "legendary" actions?
+# Check for "recharge" type actions
+##
+
+
+from ast import For
 from unicodedata import name
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import ForeignKey
 
 db = SQLAlchemy()
+
+def connect_db(app):
+    """Connect to database."""
+
+    db.app = app
+    db.init_app(app)
 
 
 class Monster(db.Model):
@@ -66,6 +81,7 @@ class Monster(db.Model):
 
     def serialize(self):
         """Turn monster object into dictionary"""
+
         return {
             'id': self.id,
             'name': self.name,
@@ -76,6 +92,8 @@ class Monster(db.Model):
         }
 
     def cr(self):
+        """Certain challenge_ratings are fractions"""
+
         if self.challenge_rating == 0.125:
             return "1/8"
         elif self.challenge_rating == 0.25:
@@ -86,6 +104,8 @@ class Monster(db.Model):
             return str(int(self.challenge_rating))
 
     def mod(self, attr):
+        """Monster attributes are associated with a modifier"""
+
         if attr % 2 == 1:
             attr -= 1
 
@@ -128,22 +148,39 @@ class Action(db.Model):
         return(f"<Action: {self.name}>")
 
 
-def connect_db(app):
-    """Connect to database."""
-
-    db.app = app
-    db.init_app(app)
-
-
-##
-# To add "legendary"
-# To check for "recharge" type actions
-##
-
-
 # class LegendaryActions(db.Model):
 #     """Model for legendary actions"""
 #     __tablename__ = "legendary_actions"
 #     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
 #     monster_id = db.Column(db.Integer, ForeignKey(
 #         'monsters.id', ondelete="CASCADE"))
+
+
+# class User (db.Model):
+#     """Model for users"""
+
+#     __tablename__ = "users"
+
+#     id = db.Column( db.Integer, primary_key=True, autoincrement=True )
+#     email = db.Column( db.String(50), nullable=False )
+#     password = db.Column( db.Text, nullable=False )
+
+
+# class Encounter(db.Model):
+#     """Model for encounters"""
+
+#     __tablename__ = "encounters"
+
+#     id = db.Column( db.Integer, primary_key=True, autoincrement=True )
+#     user_id = db.Column( db.Integer, ForeignKey('users.id'), ondelete="CASCADE")
+#     name = db.Column( db.String(50) )
+
+
+# class EncounterMonster(db.Model):
+#     """Model for join table between encounters and monsters"""
+
+#     __tablename__ = "encounters_monsters"
+
+#     encounter_id = db.Column( db.Integer, ForeignKey('encounters.id', ondelete="CASCADE") )
+#     monster_id = db.Column( db.Integer, ForeignKey('monsters.id'), ondelete="CASCADE" )
+#     frequency = db.Column( db.Integer, nullable=False, default=1 )
