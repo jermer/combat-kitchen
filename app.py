@@ -2,7 +2,9 @@
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 # from flask_login import LoginManager, login_required, login_user, logout_user
-from psycopg2 import IntegrityError
+# from psycopg2 import IntegrityError
+
+from sqlalchemy.exc import IntegrityError
 
 import requests
 
@@ -131,15 +133,10 @@ def login():
 
         if user:
             login_user(user)
-            flash(f"Welcome back {user.username}!" "success")
-
-            # next = request.args.get('next')
-
-            # if not is_safe_url(next):
-            #     return abort(400)
-
-            # return redirect(next or '/')
+            flash(f"Welcome back {user.username}!", "success")
             return redirect('/')
+        else:
+            flash("Invalid username or password.", "danger")
 
     return render_template('login.html', form=form)
 
