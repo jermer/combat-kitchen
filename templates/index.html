@@ -1,134 +1,54 @@
 {% extends 'base.html' %}
 
-
 {% block title %}
-Homepage
+Encounter Builder
 {% endblock %}
 
-
 {% block content %}
-<h4>Filter Monsters</h4>
 
-<form id="monster-filter-form" action="">
-    <div class="mb-3">
-        <label for="amount" class="form-label">Challenge Rating: </label>
-        <input id="amount" type="text" class="form-label text-primary" readonly style="border:0; font-weight:bold;">
-        <div class="mx-5">
-            <div id="slider-range" class="form-control form-range"></div>
+<div class="row">
+    <div class="col-3">
+        <!-- LEFT PANEL: ENCOUNTERS -->
+        This is the left panel.
+
+    </div>
+
+    <div class="col">
+
+        <!-- MONSTER FILTER FORM -->
+
+        <div class="row mb-5">
+            <div class="col">
+                <input type="text" class="form-control" placeholder="enter search terms...">
+            </div>
+            <div class="col-3">
+                <select name="results-per-page" id="results-per-page-input" class="form-control">
+                    <option value="5">5 per page</option>
+                    <option value="10">10 per page</option>
+                    <option value="25">25 per page</option>
+                    <option value="50">50 per page</option>
+                    <option value="100">100 per page</option>
+                </select>
+            </div>
+            <div class="col-2 d-grid">
+                <button class="btn btn-primary btn-block" type="button" data-bs-toggle="offcanvas"
+                    data-bs-target="#filter-panel" aria-controls="offcanvasExample">
+                    <i class="fa-solid fa-filter"></i> Filter
+                </button>
+            </div>
         </div>
-    </div>
 
-    <div>
-        <label for="type-input" class="form-label">Type: </label>
-        <div class="mx-5">
-            <select name="type" id="type-input" class="form-control">
-                <option value="">any type</option>
-                {% for t in monster_types %}
-                <option value="{{t}}">{{t}}</option>
-                {% endfor %}
-            </select>
-        </div>
-    </div>
+        {% include 'monster-filter.html' %}
 
-    <div>
-        <label for="results-per-page-input" class="form-label"></label>
-        <select name="results-per-page" id="results-per-page-input" class="form-control">
-            <option value="5">5 per page</option>
-            <option value="10">10 per page</option>
-            <option value="25">25 per page</option>
-            <option value="50">50 per page</option>
-            <option value="100">100 per page</option>
-        </select>
-    </div>
+        <!-- <hr> -->
 
-    <!-- UPDATING form on "change", so don't need submit.     
-    <div>
-        <button class="btn btn-primary btn-sm">Submit</button>
-    </div> -->
+        <!-- MONSTER LIST -->
+        {% include 'monster-list.html' %}
 
-</form>
-
-<hr>
-
-<h4>Monster List</h4>
-
-{% if monsters %}
-<table id="monster-table" class="table table-hover">
-    <thead class="table-light">
-        <tr scope="row">
-            <th scope="col" class="col-1"></th>
-            <th scope="col" class="col-6">Name</th>
-            <th scope="col" class="col-2">Size</th>
-            <th scope="col" class="col-1">CR</th>
-            <th scope="col" class="col-2">Type</th>
-        </tr>
-    </thead>
-    <tbody id="monster-table-body">
-
-        <!--
-        {% for m in monsters %}
-        <tr>
-            <td><i class="fa-solid fa-eye monster-detail" ></i></td></th>
-            <td>{{m.name}}</td>
-            <td>{{m.size}}</td>
-            <td>{{m.cr()}}</td>
-            <td>{{m.type}}</td>
-        </tr>
-        {% endfor %}
-        -->
-
-    </tbody>
-</table>
-{% else %}
-There are no monsters to show.
-{% endif %}
-
-<nav aria-label="Monster list navigation">
-    <ul class="pagination justify-content-center">
-        <li class="page-item">
-            <button id="table-prev-btn" class="page-link" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </button>
-            <!-- 
-            <a class="page-link" href="#" aria-label="Previous">
-                <span aria-hidden="true">&laquo;</span>
-            </a>
- -->
-        </li>
-        <!--
-        <li class="page-item"><a class="page-link" href="#">1</a></li>
-        <li class="page-item"><a class="page-link" href="#">2</a></li>
-        <li class="page-item"><a class="page-link" href="#">3</a></li>
-        -->
-        <li class="page-item">
-            <button id="table-next-btn" class="page-link" aria-label="Previous">
-                <span aria-hidden="true">&raquo;</span>
-            </button>
-            <!-- 
-            <a class="page-link" href="#" aria-label="Next">
-                <span aria-hidden="true">&raquo;</span>
-            </a>
- -->
-        </li>
-    </ul>
-</nav>
-
-<!-- 
-
-{% for monster in monsters %}
-
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasMonster{{monster.id}}" aria-labelledby="offcanvasMonster">
-    <div class="offcanvas-header">
-        <h5 id="offcanvasMonster">Monster Detail</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        {% include 'mon.html' %}
     </div>
 </div>
 
-{% endfor %}
 
- -->
+
 
 {% endblock content %}

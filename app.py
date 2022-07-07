@@ -175,3 +175,14 @@ def get_monsters():
 
     serialized = [m.serialize() for m in monsters]
     return jsonify(monsters=serialized)
+
+
+
+@app.route("/api/monsters/<int:monster_id>")
+def get_monster_by_id(monster_id):
+
+    monster = Monster.query.get_or_404(monster_id)
+
+    mstring = render_template( 'monster.html', monster=monster)
+    
+    return mstring

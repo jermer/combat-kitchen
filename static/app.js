@@ -1,4 +1,5 @@
 
+
 class MonsterTable {
 
     constructor() {
@@ -85,7 +86,7 @@ class MonsterTable {
         // determine starting monster based on pagination
         const start = (this.page - 1) * (this.resultsPerPage);
 
-        for (let i = 0; i < this.resultsPerPage && start+i < monsters.length; i++) {
+        for (let i = 0; i < this.resultsPerPage && start + i < monsters.length; i++) {
             let m = monsters[start + i];
             this.HTMLtable.append(this.renderMonsterTableRow(m));
         }
@@ -125,6 +126,8 @@ class MonsterTable {
 var MONSTER_TABLE;
 
 $(document).ready(async function () {
+    $('.toast').toast('show');
+
     MONSTER_TABLE = new MonsterTable();
     await MONSTER_TABLE.queryMonsters();
     MONSTER_TABLE.updateView();
@@ -192,23 +195,30 @@ async function handleFormSubmit(evt) {
 }
 
 
-/*
+$("#monster-table tbody").on("click", "i", showMonsterStats)
 
-function detail(evt) {
-    // var test = $(this).closest('tr').attr('data-mid');
-    var test = $(this).closest('tr').data('mid');
-    console.log(test);
+async function showMonsterStats(evt) {
+
+    var monster_id = $(this).closest('tr').data('mid');
+
+    //alert(`Click on monster with id = ${monster_id}`)
+
+    const monsterModal = document.getElementById(`monsterModal`);
+
+    const resp = await axios.get(`http://localhost:5000/api/monsters/${monster_id}`)
 
     //debugger
+    // $mbody = $('#monsterModal .modal-body')
+    // $mbody.empty()
+    // $mbody.html(resp.data)
+    
+    $('#monsterModal .modal-body')
+        .empty()
+        .html(resp.data)
 
-    var myOffcanvas = document.getElementById(`offcanvasMonster${test}`);
-    var bsOffcanvas = new bootstrap.Offcanvas(myOffcanvas)
-    bsOffcanvas.show();
+    const bsModal = new bootstrap.Modal(monsterModal)
+    bsModal.show();
 }
-
-$("#monster-table tbody").on("click", "i", detail)
-
-*/
 
 
 /*
