@@ -97,7 +97,13 @@ class MonsterTable {
      */
     renderMonsterTableRow(monster) {
         return (`<tr scope="row" data-mid="${monster.id}">
-            <td><i class="fa-solid fa-eye monster-detail" ></i></td>
+            <td>
+                <a href="#"><i class="fa-solid fa-circle-arrow-left add-to-encounter" title="add to encounter"></i></a>
+
+               <a href="#" class="monster-detail"><i class="fa-solid fa-eye" title="view stat block"></i></a>
+
+                <a href="#"><i class="fa-solid fa-pen-nib edit-monster" title="edit monster"></i></a>
+            </td>
             <td>${monster.name}</td>
             <td>${monster.size}</td>
             <td>${monster.cr}</td>
@@ -155,12 +161,24 @@ $("#results-per-page-input").on("change", handleFormSubmit)
 $("#type-input").on("change", handleFormSubmit)
 $("#amount").on("change", handleFormSubmit)
 
+$("#text-search-input").on("keyup", filterList)
+
+function filterList(evt) {
+    evt.preventDefault();
+
+    $filterText = $("#text-search-input").val().toLowerCase()
+
+    console.log(`Searching with text ${$filterText}...`)
+
+    for ( m of MONSTER_TABLE.monsters ) {
+        if (m.name.toLowerCase().indexOf($filterText) >=0)
+            console.log(m.name)
+    }
+}
+
 
 async function handleFormSubmit(evt) {
     evt.preventDefault();
-
-    // CUTTING -- let the rendering handle this
-    //$('#monster-table-body').empty()
 
     const minCR = translateSliderRange($("#slider-range").slider("values", 0))[0];
     const maxCR = translateSliderRange($("#slider-range").slider("values", 1))[0];
@@ -195,7 +213,17 @@ async function handleFormSubmit(evt) {
 }
 
 
-$("#monster-table tbody").on("click", "i", showMonsterStats)
+$("#monster-table tbody").on("click", ".add-to-encounter", addToEncounter)
+$("#monster-table tbody").on("click", ".monster-detail", showMonsterStats)
+$("#monster-table tbody").on("click", ".edit-monster", editMonster)
+
+function addToEncounter(evt) {
+    var monster_id = $(this).closest('tr').data('mid');
+
+    alert(`Click to ADD monster with id = ${monster_id}`)
+
+}
+
 
 async function showMonsterStats(evt) {
 
@@ -211,13 +239,20 @@ async function showMonsterStats(evt) {
     // $mbody = $('#monsterModal .modal-body')
     // $mbody.empty()
     // $mbody.html(resp.data)
-    
+
     $('#monsterModal .modal-body')
         .empty()
         .html(resp.data)
 
     const bsModal = new bootstrap.Modal(monsterModal)
     bsModal.show();
+}
+
+function editMonster(evt) {
+    var monster_id = $(this).closest('tr').data('mid');
+
+    alert(`Click to EDIT monster with id = ${monster_id}`)
+
 }
 
 
