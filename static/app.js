@@ -1,4 +1,40 @@
 
+/**
+ * CONSTANTS AND SETTINGS
+ */
+
+// Lookup table of XP tiers.
+// Rows represent player level (1-20).
+// Columns represent challenge level:
+//      [easy, medium, hard, deadly]
+const XP_TIERS = [
+    [25, 50, 75, 100], // level 1
+    [50, 100, 150, 200], // level 2
+    [75, 150, 225, 400],
+    [125, 250, 375, 500],
+    [250, 500, 750, 1100],
+    [300, 600, 900, 1400],
+    [350, 750, 1100, 1700],
+    [450, 900, 1400, 2100],
+    [550, 1100, 1600, 2400],
+    [600, 1200, 1900, 2800],
+    [800, 1600, 2400, 3600],
+    [1000, 2000, 3000, 4500],
+    [1100, 2200, 3400, 5100],
+    [1250, 2500, 3800, 5700],
+    [1400, 2800, 4300, 6400],
+    [1600, 3200, 4800, 7200],
+    [2000, 3900, 5900, 8800],
+    [2100, 4200, 6300, 9500],
+    [2400, 4900, 7300, 10900],
+    [2800, 5700, 8500, 12700] // level 20
+]
+
+
+/**
+ * MonsterTable class
+ * 
+ */
 
 class MonsterTable {
 
@@ -100,15 +136,16 @@ class MonsterTable {
             <td>
                 <a href="#"><i class="fa-solid fa-circle-arrow-left add-to-encounter" title="add to encounter"></i></a>
 
-               <a href="#" class="monster-detail"><i class="fa-solid fa-eye" title="view stat block"></i></a>
-
-                <a href="#"><i class="fa-solid fa-pen-nib edit-monster" title="edit monster"></i></a>
+                <a href="#" class="monster-detail"><i class="fa-solid fa-eye" title="view stat block"></i></a>
             </td>
             <td>${monster.name}</td>
             <td>${monster.size}</td>
             <td>${monster.cr}</td>
             <td>${monster.type}</td>
         </tr>`)
+
+        // VERSION 2.0 idea: add "edit monster" icon and functionality
+        // <a href="#"><i class="fa-solid fa-pen-nib edit-monster" title="edit monster"></i></a>
     }
 
     /* 
@@ -123,31 +160,13 @@ class MonsterTable {
         this.page--;
         this.updateView();
     }
-}
+} // end class MonsterTable
 
 
-const XP_TIERS = [
-    [25, 50, 75, 100], // level 1
-    [50, 100, 150, 200], // level 2
-    [75, 150, 225, 400],
-    [125, 250, 375, 500],
-    [250, 500, 750, 1100],
-    [300, 600, 900, 1400],
-    [350, 750, 1100, 1700],
-    [450, 900, 1400, 2100],
-    [550, 1100, 1600, 2400],
-    [600, 1200, 1900, 2800],
-    [800, 1600, 2400, 3600],
-    [1000, 2000, 3000, 4500],
-    [1100, 2200, 3400, 5100],
-    [1250, 2500, 3800, 5700],
-    [1400, 2800, 4300, 6400],
-    [1600, 3200, 4800, 7200],
-    [2000, 3900, 5900, 8800],
-    [2100, 4200, 6300, 9500],
-    [2400, 4900, 7300, 10900],
-    [2800, 5700, 8500, 12700] // level 20
-]
+/**
+ * EncounterPanel class
+ * 
+ */
 
 class EncounterPanel {
 
@@ -156,7 +175,7 @@ class EncounterPanel {
         this.pcGroups = [{ num: 4, lvl: 1 }];
 
         // XP goals based on PCs
-        this.pcXP = [0,0,0,0];
+        this.pcXP = [0, 0, 0, 0];
 
         // XP totals based on monsters
     }
@@ -169,13 +188,13 @@ class EncounterPanel {
 
     updatePCModel() {
         // get values from the DOM and update the object
-        
+
         this.pcGroups = [];
         const pcRows = $('.pc-table-row');
 
         //debugger
 
-        for( let row of pcRows ) {
+        for (let row of pcRows) {
             let newPCGroup = {};
             newPCGroup.num = $(row).find(".party-number-input").val();
             newPCGroup.lvl = $(row).find(".party-level-input").val();
@@ -195,13 +214,13 @@ class EncounterPanel {
     calculatePCXP() {
         const xpArr = this.pcGroups.reduce(function (xpArr, nextObj) {
             console.log(nextObj);
-            
-            for( let i = 0; i < 4; i++ ) {
-                xpArr[i] += nextObj.num * XP_TIERS[nextObj.lvl-1][i];
+
+            for (let i = 0; i < 4; i++) {
+                xpArr[i] += nextObj.num * XP_TIERS[nextObj.lvl - 1][i];
             }
 
             return xpArr;
-        }, [0,0,0,0]);
+        }, [0, 0, 0, 0]);
 
         console.log(xpArr);
         this.pcXP = xpArr;
@@ -210,10 +229,10 @@ class EncounterPanel {
     }
 
     updatePCXPView() {
-        $('#pc-xp-table-easy').text( this.pcXP[0] );
-        $('#pc-xp-table-medium').text( this.pcXP[1] );
-        $('#pc-xp-table-hard').text( this.pcXP[2] );
-        $('#pc-xp-table-deadly').text( this.pcXP[3] );
+        $('#pc-xp-table-easy').text(this.pcXP[0]);
+        $('#pc-xp-table-medium').text(this.pcXP[1]);
+        $('#pc-xp-table-hard').text(this.pcXP[2]);
+        $('#pc-xp-table-deadly').text(this.pcXP[3]);
     }
 
     calculateMonsterXP() {
@@ -263,25 +282,8 @@ class EncounterPanel {
             </tr>
         `)
     }
-}
+} // end class EncounterPanel
 
-
-/*
- *  On page load, instantiate a new MonsterTable and populate monster list
- */
-var MONSTER_TABLE;
-var ENCOUNTER_PANEL;
-
-$(document).ready(async function () {
-    $('.toast').toast('show');
-
-    ENCOUNTER_PANEL = new EncounterPanel();
-    ENCOUNTER_PANEL.calculatePCXP();
-
-    MONSTER_TABLE = new MonsterTable();
-    await MONSTER_TABLE.queryMonsters();
-    MONSTER_TABLE.updateView();
-});
 
 
 /*
@@ -296,8 +298,9 @@ $('#table-next-btn').on("click", function (e) {
 });
 
 
-/*
+/**
  *  SEARCH FORM
+ * 
  */
 $('#monster-filter-form').submit(handleFormSubmit)
 
@@ -319,7 +322,6 @@ function filterList(evt) {
             console.log(m.name)
     }
 }
-
 
 async function handleFormSubmit(evt) {
     evt.preventDefault();
@@ -399,7 +401,7 @@ $("#encounter-monster-list").on("click", ".encounter-row-delete-btn", function (
     // recalculate
 });
 
-$("#pc-list").on("change", ".pc-list-control", function(evt) {
+$("#pc-list").on("change", ".pc-list-control", function (evt) {
     ENCOUNTER_PANEL.update();
 });
 
@@ -481,3 +483,28 @@ function translateSliderRange(val) {
         return FRACTION_CRS[-val];
     }
 }
+
+
+
+
+
+/** 
+ * INITIALIZATION
+ * 
+ */
+
+// On page load, instantiate a new MonsterTable and populate monster list
+
+var MONSTER_TABLE;
+var ENCOUNTER_PANEL;
+
+$(document).ready(async function () {
+    $('.toast').toast('show');
+
+    ENCOUNTER_PANEL = new EncounterPanel();
+    ENCOUNTER_PANEL.calculatePCXP();
+
+    MONSTER_TABLE = new MonsterTable();
+    await MONSTER_TABLE.queryMonsters();
+    MONSTER_TABLE.updateView();
+});
