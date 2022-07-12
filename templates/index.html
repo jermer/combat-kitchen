@@ -7,10 +7,126 @@ Encounter Builder
 {% block content %}
 
 <div class="row">
-    <div class="col-3">
+    <div class="col-4">
         <!-- LEFT PANEL: ENCOUNTERS -->
-        This is the left panel.
+        <div>
+            <h5>PARTY</h5>
+            <div class="row">
+                <div class="col">
+                    <table class="table table-borderless">
+                        <thead>
+                            <tr class="row">
+                                <th class="col">PCs </th>
+                                <!-- <th class="col"></th> -->
+                                <th class="col">Level</th>
+                                <th class="col"></th>
+                            </tr>
+                        </thead>
+                        <tbody id="pc-list">
+                            <tr class="row pc-table-row">
+                                <td class="col">
+                                    <input id="party-number-input-0" type="number" min="1" value="4" class="form-control pc-list-control party-number-input">
+                                </td>
+                                <!-- <td class="col">X</td> -->
+                                <td class="col">
+                                    <input id="party-level-input-0" type="number" min="1" max="20" value="1"
+                                        class="form-control pc-list-control party-level-input">
+                                </td>
+                                <td class="col">
+                                    <button class="btn btn-outline-danger encounter-row-delete-btn" hidden>
+                                        <i class="fa-solid fa-trash-can"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button id="add-pc-group-btn" class="btn btn-outline-primary">Add PC Group</button>
+                </div>
 
+                <div id="party-xp" class="col-4">
+                    <small>
+                        <table>
+                            <thead>
+                                <th></th>
+                                <th></th>
+                            </thead>
+                            <tr>
+                                <td>Easy</td>
+                                <td id="pc-xp-table-easy">0</td>
+                            </tr>
+                            <tr>
+                                <td>Medium</td>
+                                <td id="pc-xp-table-medium">0</td>
+                            </tr>
+                            <tr>
+                                <td>Hard</td>
+                                <td id="pc-xp-table-hard">0</td>
+                            </tr>
+                            <tr>
+                                <td>Deadly</td>
+                                <td id="pc-xp-table-deadly">0</td>
+                            </tr>
+                        </table>
+                    </small>
+                </div>
+            </div>
+        </div>
+
+        <hr>
+
+        <div>
+            <h5>ENCOUNTER</h5>
+
+            <div>
+                <div id="encounter-table-help-text" hidden>
+                    <i>Click a monster's
+                        <i class="fa-solid fa-circle-arrow-left add-to-encounter" title="add to encounter"></i>
+                        icon to add it to this encounter.
+                    </i>
+                </div>
+                <div id="encounter-table-content">
+                    <table id="encounter-monster-list" class="table table-sm">
+                        <!-- <tr>
+                            <td class="col"><b>Aboleth</b>
+                                <p><small>(CR 10, XP 5900)</small></p>
+                            </td>
+                            <td class="col-2">
+                                <input id="encounter-row-count-279" type="number" class="form-control" min="1"
+                                    value="1">
+                            </td>
+                            <td class="col-2">
+                                <button class="btn btn-outline-danger encounter-row-delete-btn">
+                                    <i class="fa-solid fa-trash-can"></i>
+                                </button>
+                            </td>
+                        </tr> -->
+                    </table>
+                </div>
+            </div>
+
+            <hr class="border-primary">
+
+            <div id="encounter-stats">
+                <table>
+                    <thead>
+                        <th></th>
+                        <th></th>
+                    </thead>
+                    <tr>
+                        <td>Difficulty</td>
+                        <td>HARD</td>
+                    </tr>
+                    <tr>
+                        <td>Total XP</td>
+                        <td>150 (38/PC)</td>
+                    </tr>
+                    <tr>
+                        <td>Adjusted XP</td>
+                        <td>300 (75/PC)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </div>
 
     <div class="col">

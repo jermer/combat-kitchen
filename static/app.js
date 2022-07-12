@@ -126,13 +126,157 @@ class MonsterTable {
 }
 
 
+const XP_TIERS = [
+    [25, 50, 75, 100], // level 1
+    [50, 100, 150, 200], // level 2
+    [75, 150, 225, 400],
+    [125, 250, 375, 500],
+    [250, 500, 750, 1100],
+    [300, 600, 900, 1400],
+    [350, 750, 1100, 1700],
+    [450, 900, 1400, 2100],
+    [550, 1100, 1600, 2400],
+    [600, 1200, 1900, 2800],
+    [800, 1600, 2400, 3600],
+    [1000, 2000, 3000, 4500],
+    [1100, 2200, 3400, 5100],
+    [1250, 2500, 3800, 5700],
+    [1400, 2800, 4300, 6400],
+    [1600, 3200, 4800, 7200],
+    [2000, 3900, 5900, 8800],
+    [2100, 4200, 6300, 9500],
+    [2400, 4900, 7300, 10900],
+    [2800, 5700, 8500, 12700] // level 20
+]
+
+class EncounterPanel {
+
+    constructor() {
+        this.monsters = [];
+        this.pcGroups = [{ num: 4, lvl: 1 }];
+
+        // XP goals based on PCs
+        this.pcXP = [0,0,0,0];
+
+        // XP totals based on monsters
+    }
+
+    update() {
+        this.updatePCModel();
+        this.calculatePCXP();
+        this.updatePCXPView();
+    }
+
+    updatePCModel() {
+        // get values from the DOM and update the object
+        
+        this.pcGroups = [];
+        const pcRows = $('.pc-table-row');
+
+        //debugger
+
+        for( let row of pcRows ) {
+            let newPCGroup = {};
+            newPCGroup.num = $(row).find(".party-number-input").val();
+            newPCGroup.lvl = $(row).find(".party-level-input").val();
+
+            this.pcGroups.push(newPCGroup);
+        }
+
+        // for( let i=0; i < pcRows.length; i++) {
+        //     let newPCGroup = {};
+        //     newPCGroup.num = $(`#party-number-input-${i}`).val();
+        //     newPCGroup.lvl = $(`#party-level-input-${i}`).val();
+
+        //     this.pcGroups.push(newPCGroup);
+        // }
+    }
+
+    calculatePCXP() {
+        const xpArr = this.pcGroups.reduce(function (xpArr, nextObj) {
+            console.log(nextObj);
+            
+            for( let i = 0; i < 4; i++ ) {
+                xpArr[i] += nextObj.num * XP_TIERS[nextObj.lvl-1][i];
+            }
+
+            return xpArr;
+        }, [0,0,0,0]);
+
+        console.log(xpArr);
+        this.pcXP = xpArr;
+
+        this.updatePCXPView();
+    }
+
+    updatePCXPView() {
+        $('#pc-xp-table-easy').text( this.pcXP[0] );
+        $('#pc-xp-table-medium').text( this.pcXP[1] );
+        $('#pc-xp-table-hard').text( this.pcXP[2] );
+        $('#pc-xp-table-deadly').text( this.pcXP[3] );
+    }
+
+    calculateMonsterXP() {
+
+    }
+
+    renderEncounterTableRow(monster) {
+        return (`
+            <tr>
+                <td class="col">
+                    <b>${monster.name}</b>
+                    <p><small>(CR ${monster.cr}, XP ${monster.xp})</small></p>
+                </td>
+                <td class="col-2">
+                    <input id="encounter-row-count-${monster.id}" type="number" class="form-control" min="1" value="1">
+                </td>
+                <td class="col-2">
+                    <button class="btn btn-outline-danger encounter-row-delete-btn">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            </tr>
+        `)
+    }
+
+    addPCGRoup() {
+        $('#pc-list').append(
+            this.renderPCTableRow(this.pcGroups.length)
+        );
+    }
+
+    renderPCTableRow(idx) {
+        return (`
+            <tr class="row pc-table-row">
+                <td class="col">
+                    <input id="party-number-input-${idx}" type="number" min="1" value="4" class="form-control pc-list-control party-number-input">
+                </td>
+                <!-- <td class="col">X</td> -->
+                <td class="col">
+                    <input id="party-level-input-${idx}" type="number" min="1" max="20" value="1" class="form-control pc-list-control party-level-input">
+                </td>
+                <td class="col">
+                    <button class="btn btn-outline-danger pc-row-delete-btn">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            </tr>
+        `)
+    }
+}
+
+
 /*
  *  On page load, instantiate a new MonsterTable and populate monster list
  */
 var MONSTER_TABLE;
+var ENCOUNTER_PANEL;
 
 $(document).ready(async function () {
     $('.toast').toast('show');
+
+    ENCOUNTER_PANEL = new EncounterPanel();
+    ENCOUNTER_PANEL.calculatePCXP();
 
     MONSTER_TABLE = new MonsterTable();
     await MONSTER_TABLE.queryMonsters();
@@ -170,8 +314,8 @@ function filterList(evt) {
 
     console.log(`Searching with text ${$filterText}...`)
 
-    for ( m of MONSTER_TABLE.monsters ) {
-        if (m.name.toLowerCase().indexOf($filterText) >=0)
+    for (m of MONSTER_TABLE.monsters) {
+        if (m.name.toLowerCase().indexOf($filterText) >= 0)
             console.log(m.name)
     }
 }
@@ -217,12 +361,58 @@ $("#monster-table tbody").on("click", ".add-to-encounter", addToEncounter)
 $("#monster-table tbody").on("click", ".monster-detail", showMonsterStats)
 $("#monster-table tbody").on("click", ".edit-monster", editMonster)
 
+
 function addToEncounter(evt) {
     var monster_id = $(this).closest('tr').data('mid');
 
-    alert(`Click to ADD monster with id = ${monster_id}`)
+    console.debug(`Click to ADD monster with id = ${monster_id}`)
 
+    // debugger;
+
+    if (ENCOUNTER_PANEL.monsters.indexOf(monster_id) >= 0) {
+        console.debug("Already in the encounter...");
+
+        const $inpt = $(`#encounter-row-count-${monster_id}`)
+
+        $inpt.val(+$inpt.val() + 1)
+
+    } else {
+        ENCOUNTER_PANEL.monsters.push(monster_id)
+
+        m = MONSTER_TABLE.monsters.find(elt => elt.id === monster_id)
+
+        console.debug(`FOUND ${m.name}`)
+
+        $('#encounter-monster-list').append(
+            ENCOUNTER_PANEL.renderEncounterTableRow(m)
+        )
+    }
+
+    // recalculate
 }
+
+
+$("#encounter-monster-list").on("click", ".encounter-row-delete-btn", function (evt) {
+    console.log('ENC ROW DEL');
+    $(this).closest('tr').remove();
+
+    // recalculate
+});
+
+$("#pc-list").on("change", ".pc-list-control", function(evt) {
+    ENCOUNTER_PANEL.update();
+});
+
+$("#add-pc-group-btn").on("click", function (evt) {
+    ENCOUNTER_PANEL.addPCGRoup();
+    ENCOUNTER_PANEL.update();
+});
+
+$("#pc-list").on("click", ".pc-row-delete-btn", function (evt) {
+    console.log('PC ROW DEL');
+    $(this).closest('tr').remove();
+    ENCOUNTER_PANEL.update();
+});
 
 
 async function showMonsterStats(evt) {

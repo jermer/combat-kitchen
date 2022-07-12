@@ -85,10 +85,11 @@ class Monster(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'cr': self.cr(),
             'size': self.size,
             'type': self.type,
             'subtype': self.subtype,
-            'cr': self.cr()
+            'xp': self.xp
         }
 
     def cr(self):
