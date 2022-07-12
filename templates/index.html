@@ -25,7 +25,8 @@ Encounter Builder
                         <tbody id="pc-list">
                             <tr class="row pc-table-row">
                                 <td class="col">
-                                    <input id="party-number-input-0" type="number" min="1" value="4" class="form-control pc-list-control party-number-input">
+                                    <input id="party-number-input-0" type="number" min="1" value="4"
+                                        class="form-control pc-list-control party-number-input">
                                 </td>
                                 <!-- <td class="col">X</td> -->
                                 <td class="col">
@@ -104,27 +105,29 @@ Encounter Builder
                 </div>
             </div>
 
-            <hr class="border-primary">
+            <!-- <hr class="border-primary"> -->
 
             <div id="encounter-stats">
-                <table>
-                    <thead>
-                        <th></th>
-                        <th></th>
-                    </thead>
-                    <tr>
-                        <td>Difficulty</td>
-                        <td>HARD</td>
-                    </tr>
-                    <tr>
-                        <td>Total XP</td>
-                        <td>150 (38/PC)</td>
-                    </tr>
-                    <tr>
-                        <td>Adjusted XP</td>
-                        <td>300 (75/PC)</td>
-                    </tr>
-                </table>
+                <small>
+                    <table class="table table-borderless table-sm">
+                        <thead>
+                            <th></th>
+                            <th></th>
+                        </thead>
+                        <tr>
+                            <td>Total XP</td>
+                            <td id="monster-xp-total">0 (0 per PC)</td>
+                        </tr>
+                        <tr>
+                            <td>Adjusted XP</td>
+                            <td id="monster-xp-adjusted">0 (0 per PC)</td>
+                        </tr>
+                        <tr>
+                            <td>Difficulty</td>
+                            <td id="monster-xp-rating">EASY</td>
+                        </tr>
+                    </table>
+                </small>
             </div>
         </div>
     </div>
