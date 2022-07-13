@@ -10,7 +10,7 @@ Encounter Builder
     <div class="col-4">
         <!-- LEFT PANEL: ENCOUNTERS -->
         <div>
-            <h5>PARTY</h5>
+            <h5>HEROES</h5>
             <div class="row">
                 <div class="col">
                     <table class="table table-borderless">
@@ -22,16 +22,16 @@ Encounter Builder
                                 <th class="col"></th>
                             </tr>
                         </thead>
-                        <tbody id="pc-list">
-                            <tr class="row pc-table-row">
+                        <tbody id="hero-list">
+                            <tr class="row hero-table-row">
                                 <td class="col">
-                                    <input id="party-number-input-0" type="number" min="1" value="4"
-                                        class="form-control pc-list-control party-number-input">
+                                    <input type="number" min="1" value="4"
+                                        class="form-control hero-list-control hero-number-input">
                                 </td>
                                 <!-- <td class="col">X</td> -->
                                 <td class="col">
-                                    <input id="party-level-input-0" type="number" min="1" max="20" value="1"
-                                        class="form-control pc-list-control party-level-input">
+                                    <input type="number" min="1" max="20" value="1"
+                                        class="form-control hero-list-control hero-level-input">
                                 </td>
                                 <td class="col">
                                     <button class="btn btn-outline-danger encounter-row-delete-btn" hidden>
@@ -53,19 +53,19 @@ Encounter Builder
                             </thead>
                             <tr>
                                 <td>Easy</td>
-                                <td id="pc-xp-table-easy">0</td>
+                                <td id="hero-xp-table-easy">0</td>
                             </tr>
                             <tr>
                                 <td>Medium</td>
-                                <td id="pc-xp-table-medium">0</td>
+                                <td id="hero-xp-table-medium">0</td>
                             </tr>
                             <tr>
                                 <td>Hard</td>
-                                <td id="pc-xp-table-hard">0</td>
+                                <td id="hero-xp-table-hard">0</td>
                             </tr>
                             <tr>
                                 <td>Deadly</td>
-                                <td id="pc-xp-table-deadly">0</td>
+                                <td id="hero-xp-table-deadly">0</td>
                             </tr>
                         </table>
                     </small>
@@ -76,7 +76,7 @@ Encounter Builder
         <hr>
 
         <div>
-            <h5>ENCOUNTER</h5>
+            <h5>MONSTERS</h5>
 
             <div>
                 <div id="encounter-table-help-text" hidden>

@@ -182,30 +182,31 @@ class EncounterPanel {
 
     constructor() {
         this.monsters = [];
-        this.pcGroups = [{ num: 4, lvl: 1 }];
+        this.heroGroups = [{ num: 4, lvl: 1 }];
 
-        // XP goals based on PCs
-        this.pcXP = [0, 0, 0, 0];
+        // XP goals based on heroes in the encounter [easy, medium, hard, deadly]
+        this.heroXP = [0, 0, 0, 0];
 
-        // XP totals based on monsters
+        // XP totals based on monsters in the encounter
         this.monsterTotalXP = 0;
         this.monsterAdjustedXP = 0;
 
-        // Overall encounter difficulty
+        // Overall encounter difficulty [easy, medium, hard, deadly]
         this.encounterDifficulty = 'None';
     }
 
-    // process changes made to the "HEROES" section of the encounter
     updateEncounterHeroes() {
+        // process changes made to the "HEROES" section of the encounter
+
         this.updateHeroList();
         this.calculateHeroXP();
         this.updateHeroXPTable();
         this.updateEncounterChallenge();
     }
 
-    // process changes made to the "MONSTERS" section of the encounter
     updateEncounterMonsters() {
-        //debugger
+        // process changes made to the "MONSTERS" section of the encounter
+
         this.updateMonsterList();
         this.calculateMonsterXP();
         this.updateMonsterXPTable();
@@ -213,27 +214,31 @@ class EncounterPanel {
     }
 
     updateEncounterChallenge() {
+        // update the encounter challenge (easy, medium, hard, deadly) based on changes to "heroes" or "monsters"
+
         this.determineChallengeLevel();
         $('#monster-xp-rating').text(this.encounterDifficulty);
     }
 
     updateHeroList() {
-        // get values from the DOM and update the object
+        // get values from the DOM and update the internal list of heroes
 
-        this.pcGroups = [];
-        const pcRows = $('.pc-table-row');
+        this.heroGroups = [];
+        const heroRows = $('.hero-table-row');
 
-        for (let row of pcRows) {
-            let newPCGroup = {};
-            newPCGroup.num = $(row).find(".party-number-input").val();
-            newPCGroup.lvl = $(row).find(".party-level-input").val();
+        for (let row of heroRows) {
+            let newHeroGroup = {};
+            newHeroGroup.num = $(row).find(".hero-number-input").val();
+            newHeroGroup.lvl = $(row).find(".hero-level-input").val();
 
-            this.pcGroups.push(newPCGroup);
+            this.heroGroups.push(newHeroGroup);
         }
     }
 
     calculateHeroXP() {
-        const xpArr = this.pcGroups.reduce(function (xpArr, nextObj) {
+        // recalculate XP goals [easy, medium, hard, deadly] based on heroes currently in the encounter
+
+        const xpArr = this.heroGroups.reduce(function (xpArr, nextObj) {
             console.log(nextObj);
 
             for (let i = 0; i < 4; i++) {
@@ -244,33 +249,59 @@ class EncounterPanel {
         }, [0, 0, 0, 0]);
 
         console.log(xpArr);
-        this.pcXP = xpArr;
+        this.heroXP = xpArr;
 
         this.updateHeroXPTable();
     }
 
     updateHeroXPTable() {
-        $('#pc-xp-table-easy').text(this.pcXP[0]);
-        $('#pc-xp-table-medium').text(this.pcXP[1]);
-        $('#pc-xp-table-hard').text(this.pcXP[2]);
-        $('#pc-xp-table-deadly').text(this.pcXP[3]);
+        // update DOM with new XP goals
+
+        $('#hero-xp-table-easy').text(this.heroXP[0]);
+        $('#hero-xp-table-medium').text(this.heroXP[1]);
+        $('#hero-xp-table-hard').text(this.heroXP[2]);
+        $('#hero-xp-table-deadly').text(this.heroXP[3]);
+    }
+
+    addHeroGRoup() {
+        // add a new hero group to the DOM
+
+        $('#hero-list').append(
+            this.renderEncounterHeroRow()
+        );
+    }
+
+    renderEncounterHeroRow() {
+        // render the HTML for a new hero row
+
+        return (`
+            <tr class="row hero-table-row">
+                <td class="col">
+                    <input type="number" min="1" value="4" class="form-control hero-list-control hero-number-input">
+                </td>
+                <!-- <td class="col">X</td> -->
+                <td class="col">
+                    <input type="number" min="1" max="20" value="1" class="form-control hero-list-control hero-level-input">
+                </td>
+                <td class="col">
+                    <button class="btn btn-outline-danger pc-row-delete-btn">
+                        <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </td>
+            </tr>
+        `)
     }
 
     updateMonsterList() {
-        // update our internal monster list based on the DOM
+        // get values from the DOM and update the internal list of heroes
 
         this.monsters = [];
         const monsterRows = $('.encounter-monster-row');
 
         for (let row of monsterRows) {
             let newMonsterGroup = {};
-
-        //     newMonsterGroup.id = 4;
-        //     newMonsterGroup.name = 4;
-        //     newMonsterGroup.cr = 4;
-        //     newMonsterGroup.xp = 300;
-            newMonsterGroup.id = $(row).data("mid");
-            newMonsterGroup.xp = $(row).data("mxp");
+            newMonsterGroup.id = $(row).data("monster-id");
+            newMonsterGroup.xp = $(row).data("monster-xp");
             newMonsterGroup.num = +$(row).find(".monster-number-input").val();
 
             this.monsters.push(newMonsterGroup);
@@ -278,6 +309,8 @@ class EncounterPanel {
     }
 
     addNewMonster(monster_id) {
+        // add a new monster to the encounter: either update the count (if the monster already is part) of the encounter, or add it.
+
         // check whether this monster id is already in the encounter
         const found_monster = this.monsters.find(elt => elt.id === monster_id);
 
@@ -287,15 +320,9 @@ class EncounterPanel {
             found_monster.num++;
             $(`#encounter-row-count-${monster_id}`).val(found_monster.num);
 
-            //let num = +$(monster_input).val();
-            //num += 1;
-
-            //$(monster_input).val(num);
-
         } else {
             // this monster is new to the encounter
-
-            // add it to the DOM
+            // we need to add it to the DOM
             const full_monster = MONSTER_TABLE.monsters.find(elt => elt.id === monster_id)
 
             const new_monster = {
@@ -307,19 +334,19 @@ class EncounterPanel {
             };
 
             $('#encounter-monster-list').append(
-                ENCOUNTER_PANEL.renderEncounterTableRow(new_monster)
+                ENCOUNTER_PANEL.renderEncounterMonsterRow(new_monster)
             );
 
-            // rebuild the internal monster list
             this.updateMonsterList();
         }
 
-        this.calculateMonsterXP();
-        this.updateMonsterXPTable();
-        this.updateEncounterChallenge()
+        // update
+        this.updateEncounterMonsters();
     }
 
     calculateMonsterXP() {
+        // recalculate XP total based on monsters currently in the encounter
+
         let numMonsters = 0;
         let totalXP = 0;
 
@@ -338,23 +365,31 @@ class EncounterPanel {
 
         this.monsterTotalXP = totalXP;
         this.monsterAdjustedXP = adjustedXP;
-        this.determineChallengeLevel();
+    }
+
+    updateMonsterXPTable() {
+        // update DOM wiht new XP totals
+        
+        $('#monster-xp-total').text(this.monsterTotalXP);
+        $('#monster-xp-adjusted').text(this.monsterAdjustedXP);
     }
 
     determineChallengeLevel() {
+        // based on current heroes and monsters, determine whether this encounter is considererd easy, medium, hard, or deadly
+
         for (let i = 0; i < 4; i++) {
-            if (this.monsterAdjustedXP < this.pcXP[i]) {
+            if (this.monsterAdjustedXP < this.heroXP[i]) {
                 break;
             }
         }
 
-        if (this.monsterAdjustedXP < this.pcXP[1]) {
+        if (this.monsterAdjustedXP < this.heroXP[1]) {
             this.encounterDifficulty = "EASY";
         }
-        else if (this.monsterAdjustedXP < this.pcXP[2]) {
+        else if (this.monsterAdjustedXP < this.heroXP[2]) {
             this.encounterDifficulty = "MEDIUM";
         }
-        else if (this.monsterAdjustedXP < this.pcXP[3]) {
+        else if (this.monsterAdjustedXP < this.heroXP[3]) {
             this.encounterDifficulty = "HARD";
         }
         else {
@@ -362,14 +397,11 @@ class EncounterPanel {
         }
     }
 
-    updateMonsterXPTable() {
-        $('#monster-xp-total').text(this.monsterTotalXP);
-        $('#monster-xp-adjusted').text(this.monsterAdjustedXP);
-    }
+    renderEncounterMonsterRow(monster) {
+        // render the HTML for a new monster row in the encounter
 
-    renderEncounterTableRow(monster) {
         return (`
-            <tr class="encounter-monster-row" data-mid="${monster.id}" data-mxp="${monster.xp}">
+            <tr class="encounter-monster-row" data-monster-id="${monster.id}" data-monster-xp="${monster.xp}">
                 <td class="col">
                     <b>${monster.name}</b>
                     <p><small>(CR ${monster.cr}, XP ${monster.xp})</small></p>
@@ -386,32 +418,7 @@ class EncounterPanel {
         `)
     }
 
-    addPCGRoup() {
-        $('#pc-list').append(
-            this.renderPCTableRow(this.pcGroups.length)
-        );
-    }
-
-    renderPCTableRow(idx) {
-        return (`
-            <tr class="row pc-table-row">
-                <td class="col">
-                    <input id="party-number-input-${idx}" type="number" min="1" value="4" class="form-control pc-list-control party-number-input">
-                </td>
-                <!-- <td class="col">X</td> -->
-                <td class="col">
-                    <input id="party-level-input-${idx}" type="number" min="1" max="20" value="1" class="form-control pc-list-control party-level-input">
-                </td>
-                <td class="col">
-                    <button class="btn btn-outline-danger pc-row-delete-btn">
-                        <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </td>
-            </tr>
-        `)
-    }
 } // end class EncounterPanel
-
 
 
 /*
@@ -447,9 +454,8 @@ $("#text-search-input").on("keyup",
     });
 
 
-
 /**
- *  SEARCH FORM
+ *  MONSTER SEARCH FORM
  * 
  */
 $('#monster-filter-form').submit(handleFormSubmit)
@@ -481,7 +487,6 @@ async function handleFormSubmit(evt) {
 }
 
 
-
 /**
  * Clicking the "arrow" icon in the monster table adds that
  * monster to the current encounter.
@@ -489,45 +494,7 @@ async function handleFormSubmit(evt) {
 $("#monster-table tbody").on("click", ".add-to-encounter",
     function (evt) {
         var monster_id = $(this).closest('tr').data('mid');
-
-        ENCOUNTER_PANEL.addNewMonster( monster_id );
-
-        // ENCOUNTER_PANEL.updateMonsterList( monster_id );
-
-        // // check whether this monster id is already in the encounter
-        // const found_monster = ENCOUNTER_PANEL.monsters.find(elt => elt.id === monster_id);
-
-        // if (found_monster) {
-        //     // this monster is already included in the encounter
-
-        //     const monster_input = $(`#encounter-row-count-${monster_id}`)
-
-        //     let num = +$(monster_input).val();
-        //     num += 1;
-
-        //     $(monster_input).val(num);
-
-        // } else {
-        //     // this monster is new to the encounter
-
-        //     full_monster = MONSTER_TABLE.monsters.find(elt => elt.id === monster_id)
-
-        //     const new_monster = {
-        //         id: full_monster.id,
-        //         name: full_monster.name,
-        //         cr: full_monster.cr,
-        //         xp: full_monster.xp,
-        //         num: 1
-        //     };
-
-        //     ENCOUNTER_PANEL.monsters.push(new_monster);
-
-        //     $('#encounter-monster-list').append(
-        //         ENCOUNTER_PANEL.renderEncounterTableRow(new_monster)
-        //     );
-        // }
-
-        // ENCOUNTER_PANEL.update();
+        ENCOUNTER_PANEL.addNewMonster(monster_id);
     });
 
 
@@ -574,22 +541,20 @@ $("#encounter-monster-list").on("change", ".monster-number-input", function (evt
 });
 
 
-$("#pc-list").on("change", ".pc-list-control", function (evt) {
+$("#hero-list").on("change", ".hero-list-control", function (evt) {
     ENCOUNTER_PANEL.updateEncounterHeroes();
 });
 
 $("#add-pc-group-btn").on("click", function (evt) {
-    ENCOUNTER_PANEL.addPCGRoup();
+    ENCOUNTER_PANEL.addHeroGRoup();
     ENCOUNTER_PANEL.updateEncounterHeroes();
 });
 
-$("#pc-list").on("click", ".pc-row-delete-btn", function (evt) {
+$("#hero-list").on("click", ".pc-row-delete-btn", function (evt) {
     console.log('PC ROW DEL');
     $(this).closest('tr').remove();
     ENCOUNTER_PANEL.updateEncounterHeroes();
 });
-
-
 
 
 /*
