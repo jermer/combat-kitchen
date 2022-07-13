@@ -125,7 +125,7 @@ class MonsterTable {
 
         // print a helpful message if no monsters
         if (monsters.length === 0) {
-            this.HTMLtable.append(`<tr scope="row"><td colspan="4">No monsters match match filter parameters.</td></tr>`);
+            this.HTMLtable.append(`<tr scope="row"><td colspan="4">No monsters match filter parameters.</td></tr>`);
             return;
         }
 
