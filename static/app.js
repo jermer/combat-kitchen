@@ -438,6 +438,18 @@ class EncounterPanel {
     `);
     }
 
+
+    loadEncounter(heroList, monsterList) {
+        // input is two strings in JSON format
+
+        heroList = `[{"num":"4","lvl":"3"},{"num":"4","lvl":"1"}]`;
+        monsterList = `[{"id":49,"xp":50,"num":3},{"id":304,"xp":11500,"num":1}]`;
+
+        ENCOUNTER_PANEL.heroGroups = JSON.parse(heroList);
+        ENCOUNTER_PANEL.monsters = JSON.parse(monsterList);
+
+    }
+
 } // end class EncounterPanel
 
 
@@ -565,6 +577,14 @@ $("#add-hero-group-btn").on("click", function (evt) {
 $("#hero-list").on("click", ".hero-row-delete-btn", function (evt) {
     $(this).closest('.row').remove();
     ENCOUNTER_PANEL.updateEncounterHeroes();
+});
+
+
+$("#save-encounter-btn").on("click", function (evt) {
+    console.debug(
+        JSON.stringify(ENCOUNTER_PANEL.heroGroups),
+        JSON.stringify(ENCOUNTER_PANEL.monsters)
+    );
 });
 
 

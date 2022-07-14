@@ -51,7 +51,7 @@ class Monster(db.Model):
     special_abilities = db.relationship("SpecialAbility")
     actions = db.relationship("Action")
     legendary_actions = db.relationship("LegendaryAction")
-    
+
     @classmethod
     def columns(cls):
         """Return a list of monster class properties"""
@@ -306,14 +306,32 @@ class User (db.Model):
         return False
 
 
-# class Encounter(db.Model):
-#     """Model for encounters"""
+class Encounter(db.Model):
+    """Model for encounters"""
 
-#     __tablename__ = "encounters"
+    __tablename__ = "encounters"
 
-#     id = db.Column( db.Integer, primary_key=True, autoincrement=True )
-#     user_id = db.Column( db.Integer, db.ForeignKey('users.id'), ondelete="CASCADE")
-#     name = db.Column( db.String(50) )
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    user_id = db.Column(
+        db.Integer,
+        db.ForeignKey('users.id',
+                      ondelete="CASCADE")
+    )
+
+    # JSON string representing hero list
+    heroes = db.Column(
+        db.Text
+    )
+
+    # JSON string representing monster list
+    monsters = db.Column(
+        db.Text
+    )
 
 
 # class EncounterMonster(db.Model):

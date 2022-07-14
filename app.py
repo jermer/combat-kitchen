@@ -5,6 +5,7 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 
 import requests
+import os
 
 from models import Monster, User
 from models import db, connect_db
@@ -14,11 +15,14 @@ CURR_USER_KEY = "current_user"
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql:///monsters'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+    "DATABASE_URL", 'postgresql:///monsters')
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
 
-app.config['SECRET_KEY'] = "41ee5473cf593c326eacf023b409199c2e3a118f2e8051afbcdb9f7e4c48e406"
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY",
+                                          "41ee5473cf593c326eacf023b409199c2e3a118f2e8051afbcdb9f7e4c48e406")
 
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
