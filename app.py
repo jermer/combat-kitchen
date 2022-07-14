@@ -174,15 +174,15 @@ def logout():
     return redirect('/login')
 
 
-@app.route("/users/<int: id>")
-def user_page(id):
+@app.route("/users/<int:user_id>")
+def user_page(user_id):
     """Show user page"""
 
     if not g.user:
         flash("Access unauthorized.", "danger")
         return redirect('/login')
 
-    if g.user.id != id:
+    if g.user.id != user_id:
         flash("Access unauthorized. Redirecting to your own page.", "danger")
 
     return render_template('user.html', user=g.user)
