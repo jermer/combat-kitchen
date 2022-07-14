@@ -9,136 +9,16 @@ Encounter Builder
 <div class="row">
     <div class="col-4">
         <!-- LEFT PANEL: ENCOUNTERS -->
-        <div>
-            <h5>HEROES</h5>
-            <div class="row">
-                <div class="col">
-                    <table class="table table-borderless">
-                        <thead>
-                            <tr class="row">
-                                <th class="col">PCs </th>
-                                <!-- <th class="col"></th> -->
-                                <th class="col">Level</th>
-                                <th class="col"></th>
-                            </tr>
-                        </thead>
-                        <tbody id="hero-list">
-                            <tr class="row hero-table-row">
-                                <td class="col">
-                                    <input type="number" min="1" value="4"
-                                        class="form-control hero-list-control hero-number-input">
-                                </td>
-                                <!-- <td class="col">X</td> -->
-                                <td class="col">
-                                    <input type="number" min="1" max="20" value="1"
-                                        class="form-control hero-list-control hero-level-input">
-                                </td>
-                                <td class="col">
-                                    <button class="btn btn-outline-danger encounter-row-delete-btn" hidden>
-                                        <i class="fa-solid fa-trash-can"></i>
-                                    </button>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                    <button id="add-pc-group-btn" class="btn btn-outline-primary">Add PC Group</button>
-                </div>
+        {% include 'encounter-panel.html' %}
 
-                <div id="party-xp" class="col-4">
-                    <small>
-                        <table>
-                            <thead>
-                                <th></th>
-                                <th></th>
-                            </thead>
-                            <tr>
-                                <td>Easy</td>
-                                <td id="hero-xp-table-easy">0</td>
-                            </tr>
-                            <tr>
-                                <td>Medium</td>
-                                <td id="hero-xp-table-medium">0</td>
-                            </tr>
-                            <tr>
-                                <td>Hard</td>
-                                <td id="hero-xp-table-hard">0</td>
-                            </tr>
-                            <tr>
-                                <td>Deadly</td>
-                                <td id="hero-xp-table-deadly">0</td>
-                            </tr>
-                        </table>
-                    </small>
-                </div>
-            </div>
-        </div>
-
-        <hr>
-
-        <div>
-            <h5>MONSTERS</h5>
-
-            <div>
-                <div id="encounter-table-help-text" hidden>
-                    <i>Click a monster's
-                        <i class="fa-solid fa-circle-arrow-left add-to-encounter" title="add to encounter"></i>
-                        icon to add it to this encounter.
-                    </i>
-                </div>
-                <div id="encounter-table-content">
-                    <table id="encounter-monster-list" class="table table-sm">
-                        <!-- <tr>
-                            <td class="col"><b>Aboleth</b>
-                                <p><small>(CR 10, XP 5900)</small></p>
-                            </td>
-                            <td class="col-2">
-                                <input id="encounter-row-count-279" type="number" class="form-control" min="1"
-                                    value="1">
-                            </td>
-                            <td class="col-2">
-                                <button class="btn btn-outline-danger encounter-row-delete-btn">
-                                    <i class="fa-solid fa-trash-can"></i>
-                                </button>
-                            </td>
-                        </tr> -->
-                    </table>
-                </div>
-            </div>
-
-            <!-- <hr class="border-primary"> -->
-
-            <div id="encounter-stats">
-                <small>
-                    <table class="table table-borderless table-sm">
-                        <thead>
-                            <th></th>
-                            <th></th>
-                        </thead>
-                        <tr>
-                            <td>Total XP</td>
-                            <td id="monster-xp-total">0 (0 per PC)</td>
-                        </tr>
-                        <tr>
-                            <td>Adjusted XP</td>
-                            <td id="monster-xp-adjusted">0 (0 per PC)</td>
-                        </tr>
-                        <tr>
-                            <td>Difficulty</td>
-                            <td id="monster-xp-rating">EASY</td>
-                        </tr>
-                    </table>
-                </small>
-            </div>
-        </div>
     </div>
 
     <div class="col">
 
         <!-- MONSTER FILTER FORM -->
-
-        <div class="row mb-5">
+        <div class="row g-2 mb-5">
             <div class="col">
-                <input type="text" id="text-search-input" class="form-control" placeholder="enter search terms...">
+                <input type="text" id="text-search-input" class="form-control" placeholder="enter search string...">
             </div>
             <div class="col-3">
                 <select name="results-per-page" id="results-per-page-input" class="form-control">
@@ -158,8 +38,6 @@ Encounter Builder
         </div>
 
         {% include 'monster-filter.html' %}
-
-        <!-- <hr> -->
 
         <!-- MONSTER LIST -->
         {% include 'monster-list.html' %}

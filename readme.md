@@ -1,5 +1,5 @@
 
-# Capstone 1 Project Proposal
+# Capstone 1 Project
 
 ## Background Information
 

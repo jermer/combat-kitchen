@@ -1,0 +1,120 @@
+<h5>HEROES</h5>
+<div id="hero-section" class="container mb-3">
+    <div class="row g-2 justify-content-center">
+        <div class="col-3 text-center">Heroes</div>
+        <div class="col-1"></div>
+        <div class="col-3 text-center">Level</div>
+        <div class="col-2"></div>
+    </div>
+
+    <div id="hero-list">
+        <div class="row g-2 mb-1 justify-content-center hero-table-row">
+            <div class="col-3">
+                <input type="number" min="1" value="4" class="form-control hero-list-control hero-number-input">
+            </div>
+            <div class="col-1 text-center">&times;</div>
+            <div class="col-3">
+                <input type="number" min="1" max="20" value="1"
+                    class="form-control hero-list-control hero-level-input">
+            </div>
+            <div class="col-2 text-center">
+                <button class="btn btn-outline-danger hero-row-delete-btn">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Additional rows to be populated by JS -->
+
+    </div>
+
+    <div class="row mt-2 justify-content-center">
+        <div class="col-9 d-grid">
+            <button id="add-hero-group-btn" class="btn btn-outline-primary btn-block btn-sm">Add Hero
+                Group</button>
+        </div>
+    </div>
+
+</div>
+
+
+<hr class="border-primary">
+
+
+<h5>MONSTERS</h5>
+
+<div id="monster-section" class="container mb-3">
+
+    <div id="encounter-table-help-text" class="p-4 text-center bg-primary bg-opacity-10">
+        Click a monster's
+        <i class="fa-solid fa-circle-arrow-left add-to-encounter" title="add to encounter"></i>
+        icon to add it to this encounter.
+    </div>
+
+    <div id="encounter-monster-list">
+        <!-- To be populated by JS -->
+    </div>
+
+</div>
+
+<hr class="border-primary">
+
+<h5>SUMMARY</h5>
+
+<div id="encounter-stats" class="container">
+    <small>
+        <table class="table table-sm text-end">
+            <thead>
+                <tr class="table-primary">
+                    <td class="text-start">Encounter Difficulty</td>
+                    <td id="monster-xp-rating" class="fw-bold">HARD</td>
+                </tr>
+            </thead>
+
+            <tbody class="table-group-divider">
+
+                <tr class="table-light text-start">
+                    <td colspan="2">HERO XP GOALS</td>
+                </tr>
+
+                <tr>
+                    <td class="text-end">Easy</td>
+                    <td id="hero-xp-table-easy">100</td>
+                </tr>
+                <tr>
+                    <td>Medium</td>
+                    <td id="hero-xp-table-medium">200</td>
+                </tr>
+                <tr>
+                    <td>Hard</td>
+                    <td id="hero-xp-table-hard">300</td>
+                </tr>
+                <tr>
+                    <td>Deadly</td>
+                    <td id="hero-xp-table-deadly">400</td>
+                </tr>
+            </tbody>
+
+            <tfoot class="table-group-divider">
+                <tr class="table-light text-start">
+                    <td colspan="2">MONSTER XP TOTALS</td>
+                </tr>
+
+                <tr>
+                    <td>Total XP</td>
+                    <td>
+                        <span id="monster-xp-total">0</span>
+                        (<span id="monster-xp-total-per-hero">0</span> / hero)
+                    </td>
+                </tr>
+                <tr>
+                    <td>Adjusted XP</td>
+                    <td>
+                        <span id="monster-xp-adjusted">0</span>
+                        (<span id="monster-xp-adjusted-per-hero">0</span> / hero)
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </small>
+</div>

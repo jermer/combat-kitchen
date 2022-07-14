@@ -211,6 +211,17 @@ class EncounterPanel {
         this.calculateMonsterXP();
         this.updateMonsterXPTable();
         this.updateEncounterChallenge();
+
+        if( this.monsters.length === 0 ) {
+            // show the directions for adding monsters to the encounter and hide the monster list
+            $('#encounter-table-help-text').show();
+            $('#encounter-monster-list').hide();
+        }
+        else {
+            // hide the directions and show the monster list
+            $('#encounter-table-help-text').hide();
+            $('#encounter-monster-list').show();
+        }
     }
 
     updateEncounterChallenge() {
@@ -248,7 +259,7 @@ class EncounterPanel {
             return xpArr;
         }, [0, 0, 0, 0]);
 
-        console.log(xpArr);
+        // console.log(xpArr);
         this.heroXP = xpArr;
 
         this.updateHeroXPTable();
@@ -263,7 +274,7 @@ class EncounterPanel {
         $('#hero-xp-table-deadly').text(this.heroXP[3]);
     }
 
-    addHeroGRoup() {
+    addHeroGroup() {
         // add a new hero group to the DOM
 
         $('#hero-list').append(
@@ -275,21 +286,39 @@ class EncounterPanel {
         // render the HTML for a new hero row
 
         return (`
-            <tr class="row hero-table-row">
-                <td class="col">
-                    <input type="number" min="1" value="4" class="form-control hero-list-control hero-number-input">
-                </td>
-                <!-- <td class="col">X</td> -->
-                <td class="col">
-                    <input type="number" min="1" max="20" value="1" class="form-control hero-list-control hero-level-input">
-                </td>
-                <td class="col">
-                    <button class="btn btn-outline-danger pc-row-delete-btn">
-                        <i class="fa-solid fa-trash-can"></i>
+            <div class="row g-2 mb-1 justify-content-center hero-table-row">
+               <div class="col-3">
+                   <input type="number" min="1" value="4" class="form-control hero-list-control hero-number-input">
+                </div>
+                <div class="col-1 text-center">&times;</div>
+                <div class="col-3">
+                    <input type="number" min="1" max="20" value="1"
+                    class="form-control hero-list-control hero-level-input">
+                </div>
+                <div class="col-2 text-center">
+                    <button class="btn btn-outline-danger hero-row-delete-btn">
+                    <i class="fa-solid fa-trash-can"></i>
                     </button>
-                </td>
-            </tr>
+                </div>
+            </div>
         `)
+
+        // return (`
+        //     <tr class="row hero-table-row">
+        //         <td class="col">
+        //             <input type="number" min="1" value="4" class="form-control hero-list-control hero-number-input">
+        //         </td>
+        //         <!-- <td class="col">X</td> -->
+        //         <td class="col">
+        //             <input type="number" min="1" max="20" value="1" class="form-control hero-list-control hero-level-input">
+        //         </td>
+        //         <td class="col">
+        //             <button class="btn btn-outline-danger pc-row-delete-btn">
+        //                 <i class="fa-solid fa-trash-can"></i>
+        //             </button>
+        //         </td>
+        //     </tr>
+        // `)
     }
 
     updateMonsterList() {
@@ -337,7 +366,7 @@ class EncounterPanel {
                 ENCOUNTER_PANEL.renderEncounterMonsterRow(new_monster)
             );
 
-            this.updateMonsterList();
+            // this.updateMonsterList();
         }
 
         // update
@@ -369,7 +398,7 @@ class EncounterPanel {
 
     updateMonsterXPTable() {
         // update DOM wiht new XP totals
-        
+
         $('#monster-xp-total').text(this.monsterTotalXP);
         $('#monster-xp-adjusted').text(this.monsterAdjustedXP);
     }
@@ -377,13 +406,10 @@ class EncounterPanel {
     determineChallengeLevel() {
         // based on current heroes and monsters, determine whether this encounter is considererd easy, medium, hard, or deadly
 
-        for (let i = 0; i < 4; i++) {
-            if (this.monsterAdjustedXP < this.heroXP[i]) {
-                break;
-            }
+        if (this.monsterAdjustedXP === 0 || this.heroGroups.length === 0) {
+            this.encounterDifficulty = "NONE";
         }
-
-        if (this.monsterAdjustedXP < this.heroXP[1]) {
+        else if (this.monsterAdjustedXP < this.heroXP[1]) {
             this.encounterDifficulty = "EASY";
         }
         else if (this.monsterAdjustedXP < this.heroXP[2]) {
@@ -399,23 +425,43 @@ class EncounterPanel {
 
     renderEncounterMonsterRow(monster) {
         // render the HTML for a new monster row in the encounter
-
         return (`
-            <tr class="encounter-monster-row" data-monster-id="${monster.id}" data-monster-xp="${monster.xp}">
-                <td class="col">
-                    <b>${monster.name}</b>
-                    <p><small>(CR ${monster.cr}, XP ${monster.xp})</small></p>
-                </td>
-                <td class="col-2">
+            <div class="row g-2 encounter-monster-row" data-monster-id="${monster.id}" data-monster-xp="${monster.xp}">
+                <div class="col">
+                    <div class="fw-bold">${monster.name}</div>
+                    <small>
+                        <p>(CR ${monster.cr}, XP ${monster.xp})</p>
+                    </small>
+                </div>
+
+                <div class="col-3">
                     <input id="encounter-row-count-${monster.id}" type="number" class="form-control monster-number-input" min="1" value="1">
-                </td>
-                <td class="col-2">
+                </div>
+    
+                <div class="col-2 text-center">
                     <button class="btn btn-outline-danger encounter-row-delete-btn">
                         <i class="fa-solid fa-trash-can"></i>
                     </button>
-                </td>
-            </tr>
-        `)
+                </div>
+            </div>
+    `);
+
+        // return (`
+        //     <tr class="encounter-monster-row" data-monster-id="${monster.id}" data-monster-xp="${monster.xp}">
+        //         <td class="col">
+        //             <b>${monster.name}</b>
+        //             <p><small>(CR ${monster.cr}, XP ${monster.xp})</small></p>
+        //         </td>
+        //         <td class="col-2">
+        //             <input id="encounter-row-count-${monster.id}" type="number" class="form-control monster-number-input" min="1" value="1">
+        //         </td>
+        //         <td class="col-2">
+        //             <button class="btn btn-outline-danger encounter-row-delete-btn">
+        //                 <i class="fa-solid fa-trash-can"></i>
+        //             </button>
+        //         </td>
+        //     </tr>
+        // `)
     }
 
 } // end class EncounterPanel
@@ -532,7 +578,7 @@ $("#monster-table tbody").on("click", ".monster-detail",
 
 
 $("#encounter-monster-list").on("click", ".encounter-row-delete-btn", function (evt) {
-    $(this).closest('tr').remove();
+    $(this).closest('.row').remove();
     ENCOUNTER_PANEL.updateEncounterMonsters();
 });
 
@@ -545,14 +591,19 @@ $("#hero-list").on("change", ".hero-list-control", function (evt) {
     ENCOUNTER_PANEL.updateEncounterHeroes();
 });
 
-$("#add-pc-group-btn").on("click", function (evt) {
-    ENCOUNTER_PANEL.addHeroGRoup();
+$("#add-hero-group-btn").on("click", function (evt) {
+    ENCOUNTER_PANEL.addHeroGroup();
     ENCOUNTER_PANEL.updateEncounterHeroes();
 });
 
-$("#hero-list").on("click", ".pc-row-delete-btn", function (evt) {
-    console.log('PC ROW DEL');
-    $(this).closest('tr').remove();
+// $(".hero-row-delete-btn").on("click", function (evt) {
+//     console.log('PC ROW DEL');
+//     $(this).closest('.row').remove();
+//     ENCOUNTER_PANEL.updateEncounterHeroes();
+// });
+
+$("#hero-list").on("click", ".hero-row-delete-btn", function (evt) {
+    $(this).closest('.row').remove();
     ENCOUNTER_PANEL.updateEncounterHeroes();
 });
 
@@ -609,7 +660,8 @@ $(document).ready(async function () {
     $('.toast').toast('show');
 
     ENCOUNTER_PANEL = new EncounterPanel();
-    ENCOUNTER_PANEL.calculateHeroXP();
+    ENCOUNTER_PANEL.updateEncounterHeroes();
+    ENCOUNTER_PANEL.updateEncounterMonsters();
 
     MONSTER_TABLE = new MonsterTable();
     await MONSTER_TABLE.queryMonsters();
