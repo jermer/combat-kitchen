@@ -41,22 +41,39 @@ Challenge {{monster.cr()}} ({{monster.xp}} XP)
 
 {% if monster.special_abilities %}
 <hr>
-
 <h4>Special Abilities</h4>
+
 {% for spab in monster.special_abilities %}
 
 <div class="mb-2">
-    <b>{{spab.name}}.</b> {{spab.desc}}
+    <b>{{spab.name}}{% if spab.usage %} {{spab.usage}}{% endif %}.</b> {{spab.desc}}
 </div>
 
 {% endfor %}
 {% endif %}
+
 
 <hr>
 <h4>Actions</h4>
 
 {% for act in monster.actions %}
 <div class="mb-2">
-    <b>{{act.name}}.</b> {{act.desc}}
+    <b>{{act.name}}{% if act.usage %} {{act.usage}}{% endif %}.</b> {{act.desc}}
 </div>
 {% endfor %}
+
+
+{% if monster.legendary_actions %}
+<hr>
+<h4>Legendary Actions</h4>
+
+<p>The monster can take 3 legendary actions, choosing from the options below. Only one legendary action option can be used at a time, and only at the end of another creature's turn. This monster regains spent legendary actions at the start of its next turn. </p>
+
+{% for lact in monster.legendary_actions %}
+
+<div class="mb-2">
+    <b>{{lact.name}}.</b> {{lact.desc}}
+</div>
+
+{% endfor %}
+{% endif %}

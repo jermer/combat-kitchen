@@ -50,7 +50,8 @@ class Monster(db.Model):
 
     special_abilities = db.relationship("SpecialAbility")
     actions = db.relationship("Action")
-
+    legendary_actions = db.relationship("LegendaryAction")
+    
     @classmethod
     def columns(cls):
         """Return a list of monster class properties"""
@@ -143,6 +144,10 @@ class SpecialAbility(db.Model):
         nullable=False
     )
 
+    usage = db.Column(
+        db.String(50)
+    )
+
     def __repr__(self):
         """Stringify a special ability in a helpful way"""
 
@@ -177,18 +182,48 @@ class Action(db.Model):
         nullable=False
     )
 
+    usage = db.Column(
+        db.String(50)
+    )
+
     def __repr__(self):
         """Stringify an action in a helpful way"""
 
         return(f"<Action: {self.name}>")
 
 
-# class LegendaryActions(db.Model):
-#     """Model for legendary actions"""
-#     __tablename__ = "legendary_actions"
-#     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-#     monster_id = db.Column(db.Integer, ForeignKey(
-#         'monsters.id', ondelete="CASCADE"))
+class LegendaryAction(db.Model):
+    """Model for legendary actions"""
+
+    __tablename__ = "legendary_actions"
+
+    id = db.Column(
+        db.Integer,
+        primary_key=True,
+        autoincrement=True
+    )
+
+    monster_id = db.Column(
+        db.Integer,
+        db.ForeignKey(
+            'monsters.id',
+            ondelete="CASCADE")
+    )
+
+    name = db.Column(
+        db.String(50),
+        nullable=False
+    )
+
+    desc = db.Column(
+        db.Text,
+        nullable=False
+    )
+
+    def __repr__(self):
+        """Stringify a legendary action in a helpful way"""
+
+        return(f"<Legendary Action: {self.name}>")
 
 
 class User (db.Model):

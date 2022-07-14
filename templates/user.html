@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}
+User Page
+{% endblock %}
+
+{% block content %}
+
+<h1>{{user.username}}</h1>
+
+{% if user.encounters %}
+
+    List of Saved Encounters...
+    {% for enc in user.encounters %}
+        {{enc}}
+    {% endfor %}
+
+{% else %}
+
+    You have no saved encounters.
+
+{% endif %}
+
+{% endblock %}

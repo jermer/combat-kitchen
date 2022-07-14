@@ -50,7 +50,7 @@ class MonsterTable {
 
     constructor() {
         this.page = 1;
-        this.resultsPerPage = 5;
+        this.resultsPerPage = 10;
 
         this.minCR = 0;
         this.maxCR = 30;
@@ -144,9 +144,9 @@ class MonsterTable {
     renderMonsterTableRow(monster) {
         return (`<tr scope="row" data-mid="${monster.id}">
             <td>
-                <a href="#"><i class="fa-solid fa-circle-arrow-left add-to-encounter" title="add to encounter"></i></a>
+                <a href="#"><i class="fa-solid fa-circle-arrow-left add-to-encounter" data-bs-toggle="tooltip" title="add to encounter"></i></a>
 
-                <a href="#" class="monster-detail"><i class="fa-solid fa-eye" title="view stat block"></i></a>
+                <a href="#" class="monster-detail"><i class="fa-solid fa-eye" data-bs-toggle="tooltip" title="view stat block"></i></a>
             </td>
             <td>${monster.name}</td>
             <td>${monster.size}</td>
@@ -666,4 +666,7 @@ $(document).ready(async function () {
     MONSTER_TABLE = new MonsterTable();
     await MONSTER_TABLE.queryMonsters();
     MONSTER_TABLE.updateView();
+
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
 });

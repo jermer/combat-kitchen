@@ -1,8 +1,6 @@
 
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, g
 from flask_debugtoolbar import DebugToolbarExtension
-# from flask_login import LoginManager, login_required, login_user, logout_user
-# from psycopg2 import IntegrityError
 
 from sqlalchemy.exc import IntegrityError
 
@@ -25,34 +23,58 @@ app.config['SECRET_KEY'] = "41ee5473cf593c326eacf023b409199c2e3a118f2e8051afbcdb
 app.config['DEBUG_TB_INTERCEPT_REDIRECTS'] = False
 debug = DebugToolbarExtension(app)
 
-
-# login_manager = LoginManager()
-# login_manager.init_app(app)
-
-# @login_manager.user_loader
-# def load_user(user_id):
-#     return User.query.get(user_id)
-
-
 connect_db(app)
 # db.create_all()
 
 
+#
+# HOMEPAGE
+#
 @app.route("/")
 def root():
     """Render the homepage"""
-
-    # monsters = (Monster.query
-    #             .filter(Monster.challenge_rating <= 1)
-    #             .order_by(Monster.name)
-    #             .limit(10)
-    #             )
 
     monsters = (Monster.query
                 .order_by(Monster.name)
                 .limit(10))
 
     return render_template('index.html', monsters=monsters, monster_types=Monster.types())
+
+
+#
+# API FUNCTIONALITY
+#
+@app.route("/api/monsters")
+def get_monsters():
+    """Get monsters from the database according to filters in the query string"""
+
+    min_cr = request.args['min_cr']
+    max_cr = request.args['max_cr']
+
+    type = request.args.get('type', None)
+
+    query = db.session.query(Monster)
+
+    query = query.filter(Monster.challenge_rating >= min_cr,
+                         Monster.challenge_rating <= max_cr)
+
+    if type:
+        query = query.filter(Monster.type == type)
+
+    monsters = query.order_by(Monster.name).all()
+
+    serialized = [m.serialize() for m in monsters]
+    return jsonify(monsters=serialized)
+
+
+@app.route("/api/monsters/<int:monster_id>")
+def get_monster_by_id(monster_id):
+
+    monster = Monster.query.get_or_404(monster_id)
+
+    mstring = render_template('monster.html', monster=monster)
+
+    return mstring
 
 
 @app.route("/monster/<monster_id>")
@@ -76,8 +98,10 @@ def add_user_to_g():
     else:
         g.user = None
 
+
 def login_user(user):
     session[CURR_USER_KEY] = user.id
+
 
 def logout_user():
     if CURR_USER_KEY in session:
@@ -150,39 +174,15 @@ def logout():
     return redirect('/login')
 
 
-#
-# API FUNCTIONALITY
-#
+@app.route("/users/<int: id>")
+def user_page(id):
+    """Show user page"""
 
-@app.route("/api/monsters")
-def get_monsters():
-    """Get monsters from the database according to filters in the query string"""
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect('/login')
 
-    min_cr = request.args['min_cr']
-    max_cr = request.args['max_cr']
+    if g.user.id != id:
+        flash("Access unauthorized. Redirecting to your own page.", "danger")
 
-    type = request.args.get('type', None)
-
-    query = db.session.query(Monster)
-
-    query = query.filter(Monster.challenge_rating >= min_cr,
-                         Monster.challenge_rating <= max_cr)
-
-    if type:
-        query = query.filter(Monster.type == type)
-
-    monsters = query.order_by(Monster.name).all()
-
-    serialized = [m.serialize() for m in monsters]
-    return jsonify(monsters=serialized)
-
-
-
-@app.route("/api/monsters/<int:monster_id>")
-def get_monster_by_id(monster_id):
-
-    monster = Monster.query.get_or_404(monster_id)
-
-    mstring = render_template( 'monster.html', monster=monster)
-    
-    return mstring
+    return render_template('user.html', user=g.user)
