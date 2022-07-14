@@ -86,9 +86,11 @@ def get_monster_by_id(monster_id):
 
     monster = Monster.query.get_or_404(monster_id)
 
-    mstring = render_template('monster.html', monster=monster)
+    response = jsonify(render_template('monster.html', monster=monster))
 
-    return mstring
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+    return response
 
 
 @app.route("/monster/<monster_id>")
