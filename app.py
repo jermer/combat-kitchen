@@ -6,6 +6,7 @@ from sqlalchemy.exc import IntegrityError
 
 import requests
 import os
+import re
 
 from models import Monster, User
 from models import db, connect_db
@@ -15,8 +16,13 @@ CURR_USER_KEY = "current_user"
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get(
+uri = os.environ.get(
     "DATABASE_URL", 'postgresql:///monsters')
+
+if uri.startswith("postgres://"):
+    uri = uri.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = uri
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = True
