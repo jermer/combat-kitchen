@@ -58,16 +58,16 @@ class MonsterTable {
 
         this.HTMLtable = $('#monster-table-body');
 
+        this.allMonsters = [];
         this.monsters = [];
     }
 
-    async updateSettings(minCR, maxCR, type, resultsPerPage) {
+    async updateSettings(minCR, maxCR, type) {
         this.minCR = minCR;
         this.maxCR = maxCR;
         this.type = type;
 
         this.page = 1;
-        this.resultsPerPage = resultsPerPage;
 
         await this.queryMonsters();
         this.updateView();
@@ -94,10 +94,19 @@ class MonsterTable {
      *  Update the UI
      */
     updateView() {
-        // render the new table
-        this.renderMonsterTable(this.monsters)
+        let monsterList = this.monsters;
 
-        console.debug(`page = ${this.page}`)
+        // filter based on search box input
+        const filterText = $("#text-search-input").val().toLowerCase();
+
+        if (filterText !== '') {
+            monsterList = this.monsters.filter(m =>
+                m.name.toLowerCase().indexOf(filterText) >= 0
+            );
+        }
+
+        // render the new table
+        this.renderMonsterTable(monsterList)
 
         // update pagination buttons
         if (this.page === 1) {
@@ -107,7 +116,7 @@ class MonsterTable {
             $('#table-prev-btn').parent().removeClass('disabled');
         }
 
-        const maxPages = Math.ceil(this.monsters.length / this.resultsPerPage);
+        const maxPages = Math.ceil(monsterList.length / this.resultsPerPage);
         if (this.page === maxPages) {
             $('#table-next-btn').parent().addClass('disabled');
         }
@@ -119,12 +128,12 @@ class MonsterTable {
     /* 
      *  Update the monster table
      */
-    renderMonsterTable(monsters) {
+    renderMonsterTable(monster_list) {
         // empty the table
         this.HTMLtable.empty();
 
         // print a helpful message if no monsters
-        if (monsters.length === 0) {
+        if (monster_list.length === 0) {
             this.HTMLtable.append(`<tr scope="row"><td colspan="4">No monsters match filter parameters.</td></tr>`);
             return;
         }
@@ -132,8 +141,8 @@ class MonsterTable {
         // determine starting monster based on pagination
         const start = (this.page - 1) * (this.resultsPerPage);
 
-        for (let i = 0; i < this.resultsPerPage && start + i < monsters.length; i++) {
-            let m = monsters[start + i];
+        for (let i = 0; i < this.resultsPerPage && start + i < monster_list.length; i++) {
+            let m = monster_list[start + i];
             this.HTMLtable.append(this.renderMonsterTableRow(m));
         }
     }
@@ -212,7 +221,7 @@ class EncounterPanel {
         this.updateMonsterXPTable();
         this.updateEncounterChallenge();
 
-        if( this.monsters.length === 0 ) {
+        if (this.monsters.length === 0) {
             // show the directions for adding monsters to the encounter and hide the monster list
             $('#encounter-table-help-text').show();
             $('#encounter-monster-list').hide();
@@ -302,23 +311,6 @@ class EncounterPanel {
                 </div>
             </div>
         `)
-
-        // return (`
-        //     <tr class="row hero-table-row">
-        //         <td class="col">
-        //             <input type="number" min="1" value="4" class="form-control hero-list-control hero-number-input">
-        //         </td>
-        //         <!-- <td class="col">X</td> -->
-        //         <td class="col">
-        //             <input type="number" min="1" max="20" value="1" class="form-control hero-list-control hero-level-input">
-        //         </td>
-        //         <td class="col">
-        //             <button class="btn btn-outline-danger pc-row-delete-btn">
-        //                 <i class="fa-solid fa-trash-can"></i>
-        //             </button>
-        //         </td>
-        //     </tr>
-        // `)
     }
 
     updateMonsterList() {
@@ -365,8 +357,6 @@ class EncounterPanel {
             $('#encounter-monster-list').append(
                 ENCOUNTER_PANEL.renderEncounterMonsterRow(new_monster)
             );
-
-            // this.updateMonsterList();
         }
 
         // update
@@ -425,6 +415,7 @@ class EncounterPanel {
 
     renderEncounterMonsterRow(monster) {
         // render the HTML for a new monster row in the encounter
+
         return (`
             <div class="row g-2 encounter-monster-row" data-monster-id="${monster.id}" data-monster-xp="${monster.xp}">
                 <div class="col">
@@ -445,23 +436,6 @@ class EncounterPanel {
                 </div>
             </div>
     `);
-
-        // return (`
-        //     <tr class="encounter-monster-row" data-monster-id="${monster.id}" data-monster-xp="${monster.xp}">
-        //         <td class="col">
-        //             <b>${monster.name}</b>
-        //             <p><small>(CR ${monster.cr}, XP ${monster.xp})</small></p>
-        //         </td>
-        //         <td class="col-2">
-        //             <input id="encounter-row-count-${monster.id}" type="number" class="form-control monster-number-input" min="1" value="1">
-        //         </td>
-        //         <td class="col-2">
-        //             <button class="btn btn-outline-danger encounter-row-delete-btn">
-        //                 <i class="fa-solid fa-trash-can"></i>
-        //             </button>
-        //         </td>
-        //     </tr>
-        // `)
     }
 
 } // end class EncounterPanel
@@ -481,22 +455,18 @@ $('#table-next-btn').on("click", function (e) {
 });
 
 // Results per page input
-$("#results-per-page-input").on("change", handleFormSubmit)
-
+$("#results-per-page-input").on("change",
+    function (evt) {
+        // const resultsPerPage = $(this).val();
+        MONSTER_TABLE.resultsPerPage = $(this).val();;
+        MONSTER_TABLE.updateView();
+    });
 
 // Text search input
 $("#text-search-input").on("keyup",
     function (evt) {
         evt.preventDefault();
-
-        $filterText = $("#text-search-input").val().toLowerCase()
-
-        console.log(`Searching with text ${$filterText}...`)
-
-        for (m of MONSTER_TABLE.monsters) {
-            if (m.name.toLowerCase().indexOf($filterText) >= 0)
-                console.log(m.name)
-        }
+        MONSTER_TABLE.updateView();
     });
 
 
@@ -516,19 +486,15 @@ async function handleFormSubmit(evt) {
 
     const type = $("#type-input").val();
 
-    const resultsPerPage = $("#results-per-page-input").val();
-
     console.debug(`Form submitted with:
         \n-- CR range = ${minCR} - ${maxCR}
         \n-- type = ${type}
-        \n-- results per page = ${resultsPerPage}
         `);
 
     MONSTER_TABLE.updateSettings(
         minCR,
         maxCR,
-        type,
-        resultsPerPage
+        type
     );
 }
 
@@ -595,12 +561,6 @@ $("#add-hero-group-btn").on("click", function (evt) {
     ENCOUNTER_PANEL.addHeroGroup();
     ENCOUNTER_PANEL.updateEncounterHeroes();
 });
-
-// $(".hero-row-delete-btn").on("click", function (evt) {
-//     console.log('PC ROW DEL');
-//     $(this).closest('.row').remove();
-//     ENCOUNTER_PANEL.updateEncounterHeroes();
-// });
 
 $("#hero-list").on("click", ".hero-row-delete-btn", function (evt) {
     $(this).closest('.row').remove();
