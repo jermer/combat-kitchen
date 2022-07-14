@@ -74,7 +74,11 @@ def get_monsters():
     monsters = query.order_by(Monster.name).all()
 
     serialized = [m.serialize() for m in monsters]
-    return jsonify(monsters=serialized)
+
+    response = jsonify(monsters=serialized)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    
+    return response
 
 
 @app.route("/api/monsters/<int:monster_id>")
