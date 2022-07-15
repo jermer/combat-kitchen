@@ -19,6 +19,8 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="/">Combat Kitchen</a>
             <div class="navbar-nav justify-content-end">
+                <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#aboutModal">about</a>
+                <div class="vr bg-light mx-3"></div>
                 {% if not g.user %}
                 <a class="nav-link" href="/signup">sign up</a>
                 <a class="nav-link" href="/login">log in</a>
@@ -33,7 +35,7 @@
     <!-- PAGE CONTENT -->
 
     <div class="container-fluid px-4">
-    <!-- <div class="container"> -->
+        <!-- <div class="container"> -->
 
         <!-- FLASH MESSAGES VIA BOOTSTRAP "TOAST"-->
         <div aria-live="polite" aria-atomic="true" class="position-relative">
@@ -62,6 +64,40 @@
         <!-- PAGE CONTENT -->
         {% block content %}
         {% endblock %}
+
+
+        <!-- ABOUT MODAL -->
+        <div class="modal fade" id="aboutModal" tabindex="-1" aria-labelledby="aboutModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="aboutModalLabel">About Combat Kitchen</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>
+                            <i>Combat Kitchen</i> was created by <a href="https://www.linkedin.com/in/jasonermer/"
+                                target="_blank">Jason
+                                Ermer</a> for the <a href="https://www.springboard.com/" target="_blank">Springboard</a>
+                            Software Engineering Career Track. The source code is available in the project's <a href="https://github.com/jermer/combat-kitchen" target="_blank">GitHub repo</a>.
+                        </p>
+                        <p>
+                            The project was inspired by and emulates <a href="https://koboldplus.club/"
+                                target="_blank">Kobold Fight Club</a>
+                            using data available from the <a href="https://www.dnd5eapi.co/" target="_blank">D&D 5e
+                                API</a>.
+                        </p>
+                        <p>
+                            The favicon is <a href="https://game-icons.net/1x1/lorc/kitchen-knives.html"
+                                target="_blank">kitchen knives</a> by Lorc,
+                            available from <a href="https://game-icons.net/" target="_blank">game-icons.net</a> and used
+                            under a <a href="https://creativecommons.org/licenses/by/3.0/" target="_blank">CC-BY 3.0</a>
+                            license.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
 
     </div>
 
