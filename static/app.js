@@ -482,6 +482,12 @@ $("#text-search-input").on("keyup",
     });
 
 
+$(".column-header").on("click",
+    function (evt) {
+        console.log(`Column head clicked!`);
+    });
+
+
 /**
  *  MONSTER SEARCH FORM
  * 
