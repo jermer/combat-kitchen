@@ -159,7 +159,7 @@ class MonsterTable {
             </td>
             <td>${monster.name}</td>
             <td>${monster.size}</td>
-            <td>${monster.cr}</td>
+            <td data-order="${monster.challenge_rating}">${monster.cr}</td>
             <td>${monster.type}</td>
         </tr>`)
 
@@ -259,7 +259,7 @@ class EncounterPanel {
         // recalculate XP goals [easy, medium, hard, deadly] based on heroes currently in the encounter
 
         const xpArr = this.heroGroups.reduce(function (xpArr, nextObj) {
-            console.log(nextObj);
+            // console.log(nextObj);
 
             for (let i = 0; i < 4; i++) {
                 xpArr[i] += nextObj.num * XP_TIERS[nextObj.lvl][i];

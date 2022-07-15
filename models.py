@@ -86,6 +86,7 @@ class Monster(db.Model):
         return {
             'id': self.id,
             'name': self.name,
+            'challenge_rating': self.challenge_rating,
             'cr': self.cr(),
             'size': self.size,
             'type': self.type,
