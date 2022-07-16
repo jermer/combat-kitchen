@@ -17,11 +17,11 @@ User Page
 <p>
 <form class="inline">
     <button type="button" data-eid="{{enc.id}}" class="btn btn-outline-primary btn-sm load-encounter-btn">
-        <i class="fa-solid fa-arrow-up-from-bracket"></i> LOAD
+        <i class="fa-solid fa-arrow-up-from-bracket"></i> Load
     </button>
     <button type="submit" formaction="/encounters/{{enc.id}}/delete" formmethod="POST"
-        class="btn btn-outline-danger btn-sm">
-        <i class="fa-solid fa-trash-can"></i> DELETE
+        class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" title="delete encounter">
+        <i class="fa-solid fa-trash-can"></i> Delete
     </button>
     <span class="ms-2">{{enc.summarize()}}</span>
 </form>
