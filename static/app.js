@@ -204,6 +204,34 @@ class EncounterPanel {
         this.encounterDifficulty = 'None';
     }
 
+    InitializeEncounterHeroes() {
+        const storedHeroes = sessionStorage.getItem('stored_heroes');
+
+        if (storedHeroes) {
+            this.heroGroups = JSON.parse(storedHeroes);
+        }
+
+        for (let h of this.heroGroups) {
+            $('#hero-list').append(
+                this.renderEncounterHeroRow(h.num, h.lvl)
+            );
+        }
+    }
+
+    InitializeEncounterMonsters() {
+        const storedMonsters = sessionStorage.getItem('stored_monsters');
+
+        if (storedMonsters) {
+            this.monsters = JSON.parse(storedMonsters)
+        }
+
+        for (let m of this.monsters) {
+            $('#encounter-monster-list').append(
+                this.renderEncounterMonsterRow(m, m.num)
+            );
+        }
+    }
+
     updateEncounterHeroes() {
         // process changes made to the "HEROES" section of the encounter
 
@@ -224,12 +252,10 @@ class EncounterPanel {
         if (this.monsters.length === 0) {
             // show the directions for adding monsters to the encounter and hide the monster list
             $('#encounter-table-help-text').show();
-            $('#encounter-monster-list').hide();
         }
         else {
             // hide the directions and show the monster list
             $('#encounter-table-help-text').hide();
-            $('#encounter-monster-list').show();
         }
     }
 
@@ -291,17 +317,17 @@ class EncounterPanel {
         );
     }
 
-    renderEncounterHeroRow() {
+    renderEncounterHeroRow(num = 4, lvl = 1) {
         // render the HTML for a new hero row
 
         return (`
             <div class="row g-2 mb-1 justify-content-center hero-table-row">
                <div class="col-3">
-                   <input type="number" min="1" value="4" class="form-control hero-list-control hero-number-input">
+                   <input type="number" min="1" value="${num}" class="form-control hero-list-control hero-number-input">
                 </div>
                 <div class="col-1 text-center">&times;</div>
                 <div class="col-3">
-                    <input type="number" min="1" max="20" value="1"
+                    <input type="number" min="1" max="20" value="${lvl}"
                     class="form-control hero-list-control hero-level-input">
                 </div>
                 <div class="col-2 text-center">
@@ -322,6 +348,8 @@ class EncounterPanel {
         for (let row of monsterRows) {
             let newMonsterGroup = {};
             newMonsterGroup.id = $(row).data("monster-id");
+            newMonsterGroup.name = $(row).data("monster-name");
+            newMonsterGroup.cr = $(row).data("monster-cr");
             newMonsterGroup.xp = $(row).data("monster-xp");
             newMonsterGroup.num = +$(row).find(".monster-number-input").val();
 
@@ -413,11 +441,15 @@ class EncounterPanel {
         }
     }
 
-    renderEncounterMonsterRow(monster) {
+    renderEncounterMonsterRow(monster, count = 1) {
         // render the HTML for a new monster row in the encounter
 
         return (`
-            <div class="row g-2 encounter-monster-row" data-monster-id="${monster.id}" data-monster-xp="${monster.xp}">
+            <div class="row g-2 encounter-monster-row"
+                data-monster-id="${monster.id}"
+                data-monster-name="${monster.name}"
+                data-monster-cr="${monster.cr}"
+                data-monster-xp="${monster.xp}">
                 <div class="col">
                     <div class="fw-bold">${monster.name}</div>
                     <small>
@@ -426,7 +458,7 @@ class EncounterPanel {
                 </div>
 
                 <div class="col-3">
-                    <input id="encounter-row-count-${monster.id}" type="number" class="form-control monster-number-input" min="1" value="1">
+                    <input id="encounter-row-count-${monster.id}" type="number" class="form-control monster-number-input" min="1" value="${count}">
                 </div>
     
                 <div class="col-2 text-center">
@@ -437,7 +469,6 @@ class EncounterPanel {
             </div>
     `);
     }
-
 
     loadEncounter(heroList, monsterList) {
         // input is two strings in JSON format
@@ -586,11 +617,26 @@ $("#hero-list").on("click", ".hero-row-delete-btn", function (evt) {
 });
 
 
-$("#save-encounter-btn").on("click", function (evt) {
-    console.debug(
-        JSON.stringify(ENCOUNTER_PANEL.heroGroups),
-        JSON.stringify(ENCOUNTER_PANEL.monsters)
-    );
+$("#save-encounter-btn").on("click", async function (evt) {
+    heroes = JSON.stringify(ENCOUNTER_PANEL.heroGroups)
+    monsters = JSON.stringify(ENCOUNTER_PANEL.monsters)
+
+    console.debug(`sending... ${heroes} // ${monsters}`);
+
+    // add to session storage
+    sessionStorage.setItem('stored_heroes', heroes)
+    sessionStorage.setItem('stored_monsters', monsters)
+
+    if (window.currentUser.id > 0) {
+        // send to the db for long term storage
+        const resp = await axios.post(`http://localhost:5000/users/${window.currentUser.id}/save`, {
+            heroes: heroes,
+            monsters: monsters
+        })
+    }
+    else {
+        window.location.replace("http://localhost:5000/login");
+    }
 });
 
 
@@ -631,6 +677,27 @@ function translateSliderRange(val) {
 }
 
 
+/*****
+ * USER STUFF
+ * 
+ */
+
+$('#user-saved-encounters').on("click", '.load-encounter-btn', async function (evt) {
+    const enc_id = $(this).data('eid');
+
+    console.log(`CLICK ${enc_id}`);
+
+    const resp = await axios.get(`http://localhost:5000/api/encounters/${enc_id}`)
+
+    heroes = resp.data.heroes
+    monsters = resp.data.monsters
+
+    sessionStorage.setItem('stored_heroes', heroes)
+    sessionStorage.setItem('stored_monsters', monsters)
+
+    window.location.replace("http://localhost:5000/");
+});
+
 
 /** 
  * INITIALIZATION
@@ -646,8 +713,27 @@ $(document).ready(async function () {
     $('.toast').toast('show');
 
     ENCOUNTER_PANEL = new EncounterPanel();
-    ENCOUNTER_PANEL.updateEncounterHeroes();
-    ENCOUNTER_PANEL.updateEncounterMonsters();
+
+    console.log(`INITIALIZING!`)
+
+    ENCOUNTER_PANEL.InitializeEncounterHeroes();
+    ENCOUNTER_PANEL.InitializeEncounterMonsters();
+
+    ENCOUNTER_PANEL.calculateHeroXP();
+    ENCOUNTER_PANEL.updateHeroXPTable();
+    ENCOUNTER_PANEL.calculateMonsterXP();
+    ENCOUNTER_PANEL.updateMonsterXPTable();
+    ENCOUNTER_PANEL.updateEncounterChallenge();
+
+    if (ENCOUNTER_PANEL.monsters.length === 0) {
+        // show the directions for adding monsters to the encounter and hide the monster list
+        $('#encounter-table-help-text').show();
+    }
+    else {
+        // hide the directions and show the monster list
+        $('#encounter-table-help-text').hide();
+    }
+
 
     MONSTER_TABLE = new MonsterTable();
     await MONSTER_TABLE.queryMonsters();
@@ -655,4 +741,6 @@ $(document).ready(async function () {
 
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+
+
 });

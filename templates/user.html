@@ -8,17 +8,31 @@ User Page
 
 <h1>{{user.username}}</h1>
 
-{% if user.encounters %}
+<h5 class="mt-5 mb-2">Saved Encounters</h5>
 
-    List of Saved Encounters...
-    {% for enc in user.encounters %}
-        {{enc}}
-    {% endfor %}
+
+{% if user.encounters %}
+<div id="user-saved-encounters">
+{% for enc in user.encounters %}
+<p>
+<form class="inline">
+    <button type="button" data-eid="{{enc.id}}" class="btn btn-outline-primary btn-sm load-encounter-btn">
+        <i class="fa-solid fa-arrow-up-from-bracket"></i> LOAD
+    </button>
+    <button type="submit" formaction="/encounters/{{enc.id}}/delete" formmethod="POST"
+        class="btn btn-outline-danger btn-sm">
+        <i class="fa-solid fa-trash-can"></i> DELETE
+    </button>
+    <span class="ms-2">{{enc.summarize()}}</span>
+</form>
+</p>
+{% endfor %}
+</div>
 
 {% else %}
-
+<i class="ms-2">
     You have no saved encounters.
-
+</i>
 {% endif %}
 
 {% endblock %}

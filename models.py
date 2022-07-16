@@ -10,6 +10,7 @@
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
+import json
 
 db = SQLAlchemy()
 bcrypt = Bcrypt()
@@ -255,6 +256,8 @@ class User (db.Model):
         nullable=False
     )
 
+    encounters = db.relationship("Encounter", backref="user")
+
     @property
     def is_authenticated(self):
         return self.is_active
@@ -334,6 +337,51 @@ class Encounter(db.Model):
         db.Text
     )
 
+    def __repr__(self):
+        """Stringify encounter in a helpful way"""
+
+        return f"<Encounter {self.id}: {self.heroes} // {self.monsters}>"
+
+    def serialize(self):
+        """Turn encounter object into dictionary"""
+
+        return {
+            'id': self.id,
+            'user_id': self.user_id,
+            'heroes': self.heroes,
+            'monsters': self.monsters,
+        }
+
+    def summarize(self):
+        """Return a summary string for the encounter (up to 30 characters)"""
+
+        h_obj = json.loads( self.heroes )
+        m_obj = json.loads( self.monsters )
+
+        # import pdb; pdb.set_trace()
+
+        numHeroes = 0
+        for h in h_obj:
+            numHeroes += int(h['num'])
+                
+        response = "No Heroes" if numHeroes == 0 else f"Heroes x {numHeroes}"
+        response += " vs. "
+
+        if m_obj:
+            for m in m_obj:
+                monster = Monster.query.get(m['id'])
+                response += f"{monster.name} x {m['num']}, "
+            # trim off the closing comma and whitespace
+            response = response.rstrip(', ')
+
+        else:
+            response += "No Monsters"
+
+        # Trim string to 50 characters
+        if len(response) > 50:
+            response = response[:47] + "..."
+
+        return response
 
 # class EncounterMonster(db.Model):
 #     """Model for join table between encounters and monsters"""

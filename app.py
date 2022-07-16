@@ -1,4 +1,5 @@
 
+import json
 from flask import Flask, flash, jsonify, redirect, render_template, request, session, g
 from flask_debugtoolbar import DebugToolbarExtension
 
@@ -8,7 +9,7 @@ import requests
 import os
 import re
 
-from models import Monster, User
+from models import Monster, User, Encounter
 from models import db, connect_db
 from forms import SignupForm, LoginForm
 
@@ -93,13 +94,29 @@ def get_monster_by_id(monster_id):
     return response
 
 
-@app.route("/monster/<monster_id>")
-def show_monster(monster_id):
-    """Render a monster stat sheet"""
+@app.route("/api/encounters/<int:enc_id>")
+def get_encounter_by_id(enc_id):
 
-    m = Monster.query.get_or_404(monster_id)
+    encounter = Encounter.query.get_or_404(enc_id)
 
-    return render_template('monster.html', monster=m)
+    # import pdb
+    # pdb.set_trace()
+
+    serialized = encounter.serialize()
+
+    response = jsonify(serialized)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+    return response
+
+
+# @app.route("/monster/<monster_id>")
+# def show_monster(monster_id):
+#     """Render a monster stat sheet"""
+
+#     m = Monster.query.get_or_404(monster_id)
+
+#     return render_template('monster.html', monster=m)
 
 
 #
@@ -202,3 +219,54 @@ def user_page(user_id):
         flash("Access unauthorized. Redirecting to your own page.", "danger")
 
     return render_template('user.html', user=g.user)
+
+
+@app.route("/users/<int:user_id>/save", methods=["POST"])
+def save_entcounter(user_id):
+    """Save an encounter to the database"""
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect('/login')
+
+    if g.user.id != user_id:
+        flash("Access unauthorized. Redirecting to your own page.", "danger")
+
+    #user = User.query.get_or_404(user_id)
+
+    heroes = request.json.get("heroes")
+    monsters = request.json.get("monsters")
+
+    new_enc = Encounter( user_id = user_id, heroes = heroes, monsters = monsters)
+    db.session.add( new_enc )
+    db.session.commit()
+
+    response = jsonify( {response: 'success'} )
+
+    response.headers.add('Access-Control-Allow-Origin', '*')
+
+    return response
+
+@app.route("/encounters/<int:enc_id>/delete", methods=["POST"])
+def delete_encounter(enc_id):
+    """Delete an encounter from the database"""
+
+    print("=== === === === === === a")
+
+    if not g.user:
+        flash("Access unauthorized.", "danger")
+        return redirect('/login')
+
+    enc = Encounter.query.get_or_404(enc_id)
+
+    print("b")
+
+    if g.user.id != enc.user_id:
+        flash("Access unauthorized. Redirecting to your own page.", "danger")
+
+    db.session.delete( enc )
+    db.session.commit()
+
+    print("c")
+
+    return redirect(f'/users/{g.user.id}')
