@@ -49,7 +49,11 @@ def root():
                 .order_by(Monster.name)
                 .limit(10))
 
-    return render_template('index.html', monsters=monsters, monster_types=Monster.types())
+    return render_template('index.html',
+                           monsters=monsters,
+                           monster_types=Monster.types(),
+                           monster_sizes=Monster.sizes()
+                           )
 
 
 #
@@ -63,6 +67,9 @@ def get_monsters():
     max_cr = request.args['max_cr']
 
     type = request.args.get('type', None)
+    size = request.args.get('size', None)
+
+    status = request.args['status']
 
     query = db.session.query(Monster)
 
@@ -72,13 +79,22 @@ def get_monsters():
     if type:
         query = query.filter(Monster.type == type)
 
+    if size:
+        query = query.filter(Monster.size == size)
+
+    if status == 'ordinary':
+        query = query.filter(Monster.legendary_actions == None)
+    elif status == 'legendary':
+        query = query.filter(Monster.legendary_actions != None)
+    # else status == 'both' and no filtering is required
+
     monsters = query.order_by(Monster.name).all()
 
     serialized = [m.serialize() for m in monsters]
 
     response = jsonify(monsters=serialized)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    
+
     return response
 
 
@@ -237,21 +253,20 @@ def save_entcounter(user_id):
     heroes = request.json.get("heroes")
     monsters = request.json.get("monsters")
 
-    new_enc = Encounter( user_id = user_id, heroes = heroes, monsters = monsters)
-    db.session.add( new_enc )
+    new_enc = Encounter(user_id=user_id, heroes=heroes, monsters=monsters)
+    db.session.add(new_enc)
     db.session.commit()
 
-    response = jsonify( {response: 'success'} )
+    response = jsonify({response: 'success'})
 
     response.headers.add('Access-Control-Allow-Origin', '*')
 
     return response
 
+
 @app.route("/encounters/<int:enc_id>/delete", methods=["POST"])
 def delete_encounter(enc_id):
     """Delete an encounter from the database"""
-
-    print("=== === === === === === a")
 
     if not g.user:
         flash("Access unauthorized.", "danger")
@@ -259,14 +274,10 @@ def delete_encounter(enc_id):
 
     enc = Encounter.query.get_or_404(enc_id)
 
-    print("b")
-
     if g.user.id != enc.user_id:
         flash("Access unauthorized. Redirecting to your own page.", "danger")
 
-    db.session.delete( enc )
+    db.session.delete(enc)
     db.session.commit()
-
-    print("c")
 
     return redirect(f'/users/{g.user.id}')

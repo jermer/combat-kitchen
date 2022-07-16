@@ -76,6 +76,18 @@ class Monster(db.Model):
         result = [t[0] for t in result]
         return result
 
+    @classmethod
+    def sizes(cls):
+        """Return a list of monster sizes present in the db"""
+
+        result = (Monster.query
+                  .with_entities(Monster.size)
+                  .group_by(Monster.size)
+                  .order_by(Monster.size.desc())
+                  .all())
+        result = [t[0] for t in result]
+        return result
+
     def __repr__(self):
         """Stringify a monster in a helpful way"""
 

@@ -1,25 +1,31 @@
 <div class="offcanvas offcanvas-end" tabindex="-1" id="filter-panel" aria-labelledby="offcanvasExampleLabel">
 
     <div class="offcanvas-header">
-        <h4 class="offcanvas-title" id="offcanvasExampleLabel">Filter Monsters</h4>
+        <h4 class="offcanvas-title" id="offcanvasExampleLabel">Filter Monsters </h4>
+        <button id="filter-form-reset-btn" type="button" class="btn btn-primary btn-sm" aria-label="Reset Form">
+            <i class="fa-solid fa-arrow-rotate-left"></i> Reset Filters
+        </button>
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
 
     <div class="offcanvas-body">
 
         <form id="monster-filter-form" action="">
-            <div class="mb-3">
-                <label for="amount" class="form-label">Challenge Rating: </label>
-                <input id="amount" type="text" class="form-label text-primary" readonly
+
+            <!-- CHALLENGE RATING -->
+            <div class="mb-4">
+                <label for="cr-range" class="form-label">Challenge Rating </label>
+                <input id="cr-range" type="text" class="form-label text-primary" readonly
                     style="border:0; font-weight:bold;">
-                <div class="mx-5">
+                <div class="ms-3">
                     <div id="slider-range" class="form-control form-range"></div>
                 </div>
             </div>
 
-            <div>
-                <label for="type-input" class="form-label">Type: </label>
-                <div class="mx-5">
+            <!-- CREATURE TYPE -->
+            <div class="mb-4">
+                <label for="type-input" class="form-label">Monster Type </label>
+                <div class="ms-3">
                     <select name="type" id="type-input" class="form-control">
                         <option value="">any type</option>
                         {% for t in monster_types %}
@@ -27,6 +33,55 @@
                         {% endfor %}
                     </select>
                 </div>
+            </div>
+
+            <!-- SIZE CATEGORY -->
+            <div class="mb-4">
+                <label for="size-input" class="form-label">Size Category </label>
+                <div class="ms-3">
+                    <select name="type" id="size-input" class="form-control">
+                        <option value="">any size</option>
+                        {% for t in monster_sizes %}
+                        <option value="{{t}}">{{t}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <!-- LEGENDARY STATUS -->
+            <div class="mb-4">
+                <label for="legendary-selection">Legendary Status </label>
+                <fieldset id="legendary-selection" class="ms-3">
+                    <div>
+                        <input type="radio" id="status-both" name="status" value="both" checked>
+                        <label for="status-both">Both Ordinary and Legendary</label>
+                    </div>
+
+                    <div>
+                        <input type="radio" id="status-ordinary" name="status" value="ordinary">
+                        <label for="status-ordinary">Ordinary Monsters Only</label>
+                    </div>
+
+                    <div>
+                        <input type="radio" id="status-legendary" name="status" value="legendary">
+                        <label for="status-legendary">Legendary Monsters Only</label>
+                    </div>
+
+<!-- 
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="true" id="check-ordinary" checked>
+                        <label class="form-check-label" for="check-ordinary">
+                            Ordinary
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="true" id="check-legendary" checked>
+                        <label class="form-check-label" for="check-legendary">
+                            Legendary
+                        </label>
+                    </div>
+ -->
+                </fieldset>
             </div>
 
         </form>

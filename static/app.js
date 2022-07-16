@@ -55,6 +55,8 @@ class MonsterTable {
         this.minCR = 0;
         this.maxCR = 30;
         this.type = "";
+        this.size = "";
+        this.status = "both";
 
         this.HTMLtable = $('#monster-table-body');
 
@@ -62,10 +64,12 @@ class MonsterTable {
         this.monsters = [];
     }
 
-    async updateSettings(minCR, maxCR, type) {
+    async updateSettings(minCR, maxCR, type, size, status) {
         this.minCR = minCR;
         this.maxCR = maxCR;
         this.type = type;
+        this.size = size;
+        this.status = status
 
         this.page = 1;
 
@@ -80,7 +84,9 @@ class MonsterTable {
         const params = {
             min_cr: this.minCR,
             max_cr: this.maxCR,
-            type: this.type
+            type: this.type,
+            size: this.size,
+            status: this.status
         }
 
         // get updated monster list from the api
@@ -523,9 +529,13 @@ $(".column-header").on("click",
  *  MONSTER SEARCH FORM
  * 
  */
-$('#monster-filter-form').submit(handleFormSubmit)
+//$('#monster-filter-form').submit(handleFormSubmit)
+
 $("#type-input").on("change", handleFormSubmit)
-$("#amount").on("change", handleFormSubmit)
+$("#size-input").on("change", handleFormSubmit)
+$("input[name=status]:radio").on("change", handleFormSubmit)
+$("#slider-range").on("change", handleFormSubmit)
+$("#cr-range").on("change", handleFormSubmit)
 
 async function handleFormSubmit(evt) {
     evt.preventDefault();
@@ -534,18 +544,40 @@ async function handleFormSubmit(evt) {
     const maxCR = translateSliderRange($("#slider-range").slider("values", 1))[0];
 
     const type = $("#type-input").val();
+    const size = $("#size-input").val();
+
+    const status = $("input[name=status]:radio:checked").val();
+
+    // const ordinary = $("#check-ordinary").prop("checked");
+    // const legendary = $("#check-legendary").prop("checked");
 
     console.debug(`Form submitted with:
         \n-- CR range = ${minCR} - ${maxCR}
         \n-- type = ${type}
+        \n-- size = ${size}
+        \n-- status = ${status}
         `);
 
     MONSTER_TABLE.updateSettings(
         minCR,
         maxCR,
-        type
+        type,
+        size,
+        status
     );
 }
+
+
+$("#filter-form-reset-btn").on("click", function () {
+    $("#slider-range").slider("values", 0, -3);
+    $("#slider-range").slider("values", 1, 30);
+    $("#type-input").val('');
+    $("#size-input").val('');
+    $("#status-both").prop('checked', true);
+
+    // trigger a change
+    $("#slider-range").trigger('change');
+});
 
 
 /**
@@ -643,35 +675,47 @@ $("#save-encounter-btn").on("click", async function (evt) {
 /*
  *  CHALLENGE RATING DOUBLE-ENDED SLIDER
  */
-const FRACTION_CRS = [
-    [0.5, "1/2"],
-    [0.25, "1/4"],
-    [0.125, "1/8"],
-    [0, "0"]
-]
 
+// initialize
+$("#cr-range").val("0 - 30");
+
+// on slide
 $("#slider-range").slider({
+    animate: true,
     range: true,
     min: -3,
     max: 30,
     step: 1,
     values: [-3, 30],
-    slide: function (event, ui) {
-        // $("#amount").val(ui.values[0] + " - " + ui.values[1]);
-        $("#amount").val(translateSliderRange(ui.values[0])[1] + " - " + translateSliderRange(ui.values[1])[1]);
-        $("#amount").change();
-    }
+    change: (event, ui) => updateSliderDisplay(event, ui),
+    slide: (event, ui) => updateSliderDisplay(event, ui),
+    stop: (event, ui) => updateSliderDisplay(event, ui)
 });
-// $("#amount").val($("#slider-range").slider("values", 0) +
-// " - " + $("#slider-range").slider("values", 1));
-$("#amount").val("0 - 30");
 
+function updateSliderDisplay(event, ui) {
+    // update the UI element that shows the slider endpoints
+
+    $("#cr-range").val(
+        translateSliderRange(ui.values[0])[1] + " - " + translateSliderRange(ui.values[1])[1]
+    );
+    $("#cr-range").trigger('change');
+}
 
 function translateSliderRange(val) {
+    // translate range [-3, 30] to [0, 30] with added fractions for 1/8, 1/4, 1/2
+
+    const FRACTION_CRS = [
+        [0.5, "1/2"],       // slider position 0
+        [0.25, "1/4"],      // slider position 1
+        [0.125, "1/8"],     // slider position 2
+        [0, "0"]            // slider position 3
+    ]
+
     if (val >= 1) {
         return [val, val.toString()];
     }
     else {
+        // if value is [-3 - 0] lookup the opposite (+/-) value in the table
         return FRACTION_CRS[-val];
     }
 }
