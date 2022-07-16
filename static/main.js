@@ -7,29 +7,11 @@ $(document).ready(async function () {
 
     // Create and initialize a new encounter panel
     ENCOUNTER_PANEL = new EncounterPanel();
-    ENCOUNTER_PANEL.InitializeEncounterHeroes();
-    ENCOUNTER_PANEL.InitializeEncounterMonsters();
+    ENCOUNTER_PANEL.initialize();
 
-
-    ENCOUNTER_PANEL.calculateHeroXP();
-    ENCOUNTER_PANEL.updateHeroXPTable();
-    ENCOUNTER_PANEL.calculateMonsterXP();
-    ENCOUNTER_PANEL.updateMonsterXPTable();
-    ENCOUNTER_PANEL.updateEncounterChallenge();
-
-    if (ENCOUNTER_PANEL.monsters.length === 0) {
-        // show the directions for adding monsters to the encounter and hide the monster list
-        $('#encounter-table-help-text').show();
-    }
-    else {
-        // hide the directions and show the monster list
-        $('#encounter-table-help-text').hide();
-    }
-
+    // Create and initialize a new monster table
     MONSTER_TABLE = new MonsterTable();
-    await MONSTER_TABLE.queryMonsters();
-    MONSTER_TABLE.updateView();
-
+    await MONSTER_TABLE.initialize();
 
     // Enable tooltips
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')

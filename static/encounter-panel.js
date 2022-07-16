@@ -29,7 +29,6 @@ const XP_TIERS = [
     [2800, 5700, 8500, 12700] // level 20
 ]
 
-
 /**
  *  Lookup table for encounter multipliers
  *  The challenge rating increases by a multiplier
@@ -55,7 +54,7 @@ let ENCOUNTER_PANEL;
 class EncounterPanel {
 
     constructor() {
-        this.monsters = [];
+        this.monsterGroups = [];
         this.heroGroups = [{ num: 4, lvl: 1 }];
 
         // XP goals based on heroes in the encounter [easy, medium, hard, deadly]
@@ -70,10 +69,32 @@ class EncounterPanel {
     }
 
     /**
+     *  Initialize a new encounter panel
+     */
+    initialize() {
+        this.initializeEncounterHeroes();
+        this.initializeEncounterMonsters();
+        this.calculateHeroXP();
+        this.updateHeroXPTable();
+        this.calculateMonsterXP();
+        this.updateMonsterXPTable();
+        this.updateEncounterChallenge();
+
+        if (this.monsterGroups.length === 0) {
+            // show the directions for adding monsters to the encounter and hide the monster list
+            $('#encounter-table-help-text').show();
+        }
+        else {
+            // hide the directions and show the monster list
+            $('#encounter-table-help-text').hide();
+        }
+    }
+
+    /**
      *  Populate the "heroes" section of the encounter panel
      *  with the heroes in session storage
      */
-    InitializeEncounterHeroes() {
+    initializeEncounterHeroes() {
         const storedHeroes = sessionStorage.getItem('stored_heroes');
 
         if (storedHeroes) {
@@ -91,14 +112,14 @@ class EncounterPanel {
      *  Populate the "monsters" section of the encounter panel
      *  with the monsters in session storage
      */
-    InitializeEncounterMonsters() {
+    initializeEncounterMonsters() {
         const storedMonsters = sessionStorage.getItem('stored_monsters');
 
         if (storedMonsters) {
-            this.monsters = JSON.parse(storedMonsters)
+            this.monsterGroups = JSON.parse(storedMonsters)
         }
 
-        for (let m of this.monsters) {
+        for (let m of this.monsterGroups) {
             $('#encounter-monster-list').append(
                 this.renderEncounterMonsterRow(m, m.num)
             );
@@ -124,7 +145,7 @@ class EncounterPanel {
         this.updateMonsterXPTable();
         this.updateEncounterChallenge();
 
-        if (this.monsters.length === 0) {
+        if (this.monsterGroups.length === 0) {
             // show the directions for adding monsters to the encounter and hide the monster list
             $('#encounter-table-help-text').show();
         }
@@ -164,10 +185,10 @@ class EncounterPanel {
         }
     }
 
-
-
+    /**
+     *  Changes in the DOM are propagated to the internal model
+     */
     updateHeroList() {
-        // get values from the DOM and update the internal list of heroes
 
         this.heroGroups = [];
         const heroRows = $('.hero-table-row');
@@ -181,8 +202,30 @@ class EncounterPanel {
         }
     }
 
+    /**
+     *  Changes in the DOM are propagated to the internal model
+     */
+    updateMonsterList() {
+        this.monsterGroups = [];
+        const monsterRows = $('.encounter-monster-row');
+
+        for (let row of monsterRows) {
+            let newMonsterGroup = {};
+            newMonsterGroup.id = $(row).data("monster-id");
+            newMonsterGroup.name = $(row).data("monster-name");
+            newMonsterGroup.cr = $(row).data("monster-cr");
+            newMonsterGroup.xp = $(row).data("monster-xp");
+            newMonsterGroup.num = +$(row).find(".monster-number-input").val();
+
+            this.monsterGroups.push(newMonsterGroup);
+        }
+    }
+
+    /**
+     *  Recalculate XP goals [easy, medium, hard, deadly] based
+     *  on heroes currently in the encounter
+     */
     calculateHeroXP() {
-        // recalculate XP goals [easy, medium, hard, deadly] based on heroes currently in the encounter
 
         const xpArr = this.heroGroups.reduce(function (xpArr, nextObj) {
             // console.log(nextObj);
@@ -197,12 +240,13 @@ class EncounterPanel {
         // console.log(xpArr);
         this.heroXP = xpArr;
 
-        this.updateHeroXPTable();
+        // this.updateHeroXPTable();
     }
 
+    /**
+     *  Update DOM with new XP goals
+     */
     updateHeroXPTable() {
-        // update DOM with new XP goals
-
         $('#hero-xp-table-easy').text(this.heroXP[0]);
         $('#hero-xp-table-medium').text(this.heroXP[1]);
         $('#hero-xp-table-hard').text(this.heroXP[2]);
@@ -210,55 +254,36 @@ class EncounterPanel {
     }
 
     /**
-     *  Add a new hero group to the DOM
+     *  Recalculate XP total based on monsters currently in the encounter
      */
-    addHeroGroup() {
-        $('#hero-list').append(
-            this.renderEncounterHeroRow()
+    calculateMonsterXP() {
+
+        let numMonsters = 0;
+        let totalXP = 0;
+
+        // total the monsters' XP
+        for (let m of this.monsterGroups) {
+            numMonsters += m.num;
+            totalXP += (m.xp * m.num);
+        }
+
+        // adjust the XP based on number of monsters
+        // and the number of PCs
+        let adjustedXP = totalXP * (
+            numMonsters > 15 ? 4 :
+                ENCOUNTER_MULTIPLIERS[numMonsters]
         );
+
+        this.monsterTotalXP = totalXP;
+        this.monsterAdjustedXP = adjustedXP;
     }
 
     /**
-     *  Render the HTML for a new hero group
+     *  Update DOM with new XP totals
      */
-    renderEncounterHeroRow(num = 4, lvl = 1) {
-        return (`
-            <div class="row g-2 mb-1 justify-content-center hero-table-row">
-               <div class="col-3">
-                   <input type="number" min="1" value="${num}" class="form-control hero-list-control hero-number-input">
-                </div>
-                <div class="col-1 text-center">&times;</div>
-                <div class="col-3">
-                    <input type="number" min="1" max="20" value="${lvl}"
-                    class="form-control hero-list-control hero-level-input">
-                </div>
-                <div class="col-2 text-center">
-                    <button class="btn btn-outline-danger hero-row-delete-btn">
-                    <i class="fa-solid fa-trash-can"></i>
-                    </button>
-                </div>
-            </div>
-        `)
-    }
-
-
-
-    updateMonsterList() {
-        // get values from the DOM and update the internal list of heroes
-
-        this.monsters = [];
-        const monsterRows = $('.encounter-monster-row');
-
-        for (let row of monsterRows) {
-            let newMonsterGroup = {};
-            newMonsterGroup.id = $(row).data("monster-id");
-            newMonsterGroup.name = $(row).data("monster-name");
-            newMonsterGroup.cr = $(row).data("monster-cr");
-            newMonsterGroup.xp = $(row).data("monster-xp");
-            newMonsterGroup.num = +$(row).find(".monster-number-input").val();
-
-            this.monsters.push(newMonsterGroup);
-        }
+    updateMonsterXPTable() {
+        $('#monster-xp-total').text(this.monsterTotalXP);
+        $('#monster-xp-adjusted').text(this.monsterAdjustedXP);
     }
 
     /**
@@ -267,7 +292,7 @@ class EncounterPanel {
      */
     addNewMonster(monster_id) {
         // check whether this monster id is already in the encounter
-        const found_monster = this.monsters.find(elt => elt.id === monster_id);
+        const found_monster = this.monsterGroups.find(elt => elt.id === monster_id);
 
         if (found_monster) {
             // this monster is already included in the encounter
@@ -297,46 +322,52 @@ class EncounterPanel {
         this.updateEncounterMonsters();
     }
 
-    calculateMonsterXP() {
-        // recalculate XP total based on monsters currently in the encounter
-
-        let numMonsters = 0;
-        let totalXP = 0;
-
-        // total the monsters' XP
-        for (let m of this.monsters) {
-            numMonsters += m.num;
-            totalXP += (m.xp * m.num);
-        }
-
-        // adjust the XP based on number of monsters
-        // and the number of PCs
-        let adjustedXP = totalXP * (
-            numMonsters > 15 ? 4 :
-                ENCOUNTER_MULTIPLIERS[numMonsters]
+    /**
+    *  Add a new hero group to the encounter
+    */
+    addHeroGroup() {
+        $('#hero-list').append(
+            this.renderEncounterHeroRow()
         );
 
-        this.monsterTotalXP = totalXP;
-        this.monsterAdjustedXP = adjustedXP;
+        // update
+        this.updateEncounterHeroes();
     }
 
-    updateMonsterXPTable() {
-        // update DOM wiht new XP totals
-
-        $('#monster-xp-total').text(this.monsterTotalXP);
-        $('#monster-xp-adjusted').text(this.monsterAdjustedXP);
+    /**
+     *  Generate the HTML for a new hero group in the encounter
+     */
+    renderEncounterHeroRow(num = 4, lvl = 1) {
+        return (`
+            <div class="row g-2 mb-1 justify-content-center hero-table-row">
+                <div class="col-3">
+                   <input type="number" min="1" value="${num}" class="form-control hero-list-control hero-number-input">
+                </div>
+                <div class="col-1 text-center">&times;</div>
+                <div class="col-3">
+                    <input type="number" min="1" max="20" value="${lvl}"
+                    class="form-control hero-list-control hero-level-input">
+                </div>
+                <div class="col-2 text-center">
+                    <button class="btn btn-outline-danger hero-row-delete-btn">
+                    <i class="fa-solid fa-trash-can"></i>
+                    </button>
+                </div>
+            </div>
+        `)
     }
 
-
+    /**
+     *  Generate the HTML for a new monster group in the encounter
+     */
     renderEncounterMonsterRow(monster, count = 1) {
-        // render the HTML for a new monster row in the encounter
-
         return (`
             <div class="row g-2 encounter-monster-row"
                 data-monster-id="${monster.id}"
                 data-monster-name="${monster.name}"
                 data-monster-cr="${monster.cr}"
                 data-monster-xp="${monster.xp}">
+
                 <div class="col">
                     <div class="fw-bold">${monster.name}</div>
                     <small>
@@ -357,17 +388,6 @@ class EncounterPanel {
     `);
     }
 
-    loadEncounter(heroList, monsterList) {
-        // input is two strings in JSON format
-
-        heroList = `[{"num":"4","lvl":"3"},{"num":"4","lvl":"1"}]`;
-        monsterList = `[{"id":49,"xp":50,"num":3},{"id":304,"xp":11500,"num":1}]`;
-
-        ENCOUNTER_PANEL.heroGroups = JSON.parse(heroList);
-        ENCOUNTER_PANEL.monsters = JSON.parse(monsterList);
-
-    }
-
 } // end class EncounterPanel
 
 
@@ -380,28 +400,32 @@ class EncounterPanel {
  *  fully on the client side
  */
 
-$("#encounter-monster-list").on("click", ".encounter-row-delete-btn", function (evt) {
-    $(this).closest('.row').remove();
-    ENCOUNTER_PANEL.updateEncounterMonsters();
+// add a new hero group to the encounter
+$("#add-hero-group-btn").on("click", function (evt) {
+    ENCOUNTER_PANEL.addHeroGroup();
+    //ENCOUNTER_PANEL.updateEncounterHeroes();
 });
 
-$("#encounter-monster-list").on("change", ".monster-number-input", function (evt) {
-    ENCOUNTER_PANEL.updateEncounterMonsters();
-});
-
-
+// edit a hero group in the encounter
 $("#hero-list").on("change", ".hero-list-control", function (evt) {
     ENCOUNTER_PANEL.updateEncounterHeroes();
 });
 
-$("#add-hero-group-btn").on("click", function (evt) {
-    ENCOUNTER_PANEL.addHeroGroup();
-    ENCOUNTER_PANEL.updateEncounterHeroes();
-});
-
+// delete a hero group from the encounter
 $("#hero-list").on("click", ".hero-row-delete-btn", function (evt) {
     $(this).closest('.row').remove();
     ENCOUNTER_PANEL.updateEncounterHeroes();
+});
+
+// edit a monster group in the encounter
+$("#encounter-monster-list").on("change", ".monster-number-input", function (evt) {
+    ENCOUNTER_PANEL.updateEncounterMonsters();
+});
+
+// delete a monster group from the encounter
+$("#encounter-monster-list").on("click", ".encounter-row-delete-btn", function (evt) {
+    $(this).closest('.row').remove();
+    ENCOUNTER_PANEL.updateEncounterMonsters();
 });
 
 
@@ -413,9 +437,10 @@ $("#hero-list").on("click", ".hero-row-delete-btn", function (evt) {
  *  require requests to the API
  */
 
+// save the current encounter to the user's encounter list
 $("#save-encounter-btn").on("click", async function (evt) {
-    heroes = JSON.stringify(ENCOUNTER_PANEL.heroGroups)
-    monsters = JSON.stringify(ENCOUNTER_PANEL.monsters)
+    const heroes = JSON.stringify(ENCOUNTER_PANEL.heroGroups)
+    const monsters = JSON.stringify(ENCOUNTER_PANEL.monsterGroups)
 
     console.debug(`sending... ${heroes} // ${monsters}`);
 
@@ -435,7 +460,7 @@ $("#save-encounter-btn").on("click", async function (evt) {
     }
 });
 
-
+// load the selected encounter into the encounter panel
 $('#user-saved-encounters').on("click", '.load-encounter-btn', async function (evt) {
     const enc_id = $(this).data('eid');
 
@@ -443,8 +468,8 @@ $('#user-saved-encounters').on("click", '.load-encounter-btn', async function (e
 
     const resp = await axios.get(`http://localhost:5000/api/encounters/${enc_id}`)
 
-    heroes = resp.data.heroes
-    monsters = resp.data.monsters
+    const heroes = resp.data.heroes
+    const monsters = resp.data.monsters
 
     sessionStorage.setItem('stored_heroes', heroes)
     sessionStorage.setItem('stored_monsters', monsters)

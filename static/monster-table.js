@@ -24,6 +24,17 @@ class MonsterTable {
         this.monsters = [];
     }
 
+    /**
+     *  Initialize a new monster table
+     */
+    async initialize() {
+        await MONSTER_TABLE.queryMonsters();
+        MONSTER_TABLE.updateView();
+    }
+
+    /**
+     *  Update internal filter parameters and fetch from the API
+     */
     async updateSettings(minCR, maxCR, type, size, status) {
         this.minCR = minCR;
         this.maxCR = maxCR;
@@ -37,8 +48,8 @@ class MonsterTable {
         this.updateView();
     }
 
-    /*
-     *   Query the API based on the current settings
+    /**
+     *  Query the API based on the current settings
      */
     async queryMonsters() {
         const params = {
@@ -57,7 +68,7 @@ class MonsterTable {
     }
 
     /*
-     *  Update the UI
+     *  Update the complete table UI
      */
     updateView() {
         let monsterList = this.monsters;
@@ -129,7 +140,7 @@ class MonsterTable {
             <td>${monster.type}</td>
         </tr>`)
 
-        // VERSION 2.0 idea: add "edit monster" icon and functionality
+        // Version 2 feature idea: add "edit monster" icon and functionality
         // <a href="#"><i class="fa-solid fa-pen-nib edit-monster" title="edit monster"></i></a>
     }
 

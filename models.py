@@ -364,7 +364,7 @@ class Encounter(db.Model):
             'monsters': self.monsters,
         }
 
-    def summarize(self):
+    def summarize(self, length=50):
         """Return a summary string for the encounter (up to 30 characters)"""
 
         h_obj = json.loads( self.heroes )
@@ -389,9 +389,9 @@ class Encounter(db.Model):
         else:
             response += "No Monsters"
 
-        # Trim string to 50 characters
-        if len(response) > 50:
-            response = response[:47] + "..."
+        # Trim string to 'length' characters
+        if len(response) > length:
+            response = response[:length-3] + "..."
 
         return response
 
