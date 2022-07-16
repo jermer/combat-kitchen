@@ -78,6 +78,7 @@ class EncounterPanel {
         this.updateHeroXPTable();
         this.calculateMonsterXP();
         this.updateMonsterXPTable();
+        this.updatePerHeroXPTotals()
         this.updateEncounterChallenge();
 
         if (this.monsterGroups.length === 0) {
@@ -133,6 +134,7 @@ class EncounterPanel {
         this.updateHeroList();
         this.calculateHeroXP();
         this.updateHeroXPTable();
+        this.updatePerHeroXPTotals()
         this.updateEncounterChallenge();
     }
 
@@ -143,6 +145,7 @@ class EncounterPanel {
         this.updateMonsterList();
         this.calculateMonsterXP();
         this.updateMonsterXPTable();
+        this.updatePerHeroXPTotals()
         this.updateEncounterChallenge();
 
         if (this.monsterGroups.length === 0) {
@@ -184,6 +187,23 @@ class EncounterPanel {
             this.encounterDifficulty = "DEADLY";
         }
     }
+
+    /**
+     *  Update the "per hero" totals in the XP table
+     */
+    updatePerHeroXPTotals() {
+        let numHeroes = this.heroGroups.reduce(
+            (sum, grp) => sum + grp.num, 0
+        );
+
+        $('#monster-xp-total-per-hero').text(
+            Math.round(this.monsterTotalXP / numHeroes)
+        );
+        $('#monster-xp-adjusted-per-hero').text(
+            Math.round(this.monsterAdjustedXP / numHeroes)
+        );
+    }
+
 
     /**
      *  Changes in the DOM are propagated to the internal model
