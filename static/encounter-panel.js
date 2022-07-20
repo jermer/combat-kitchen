@@ -470,29 +470,12 @@ $("#save-encounter-btn").on("click", async function (evt) {
 
     if (window.currentUser.id > 0) {
         // send to the db for long term storage
-        const resp = await axios.post(`http://localhost:5000/users/${window.currentUser.id}/save`, {
+        const resp = await axios.post(`/users/${window.currentUser.id}/save`, {
             heroes: heroes,
             monsters: monsters
         })
     }
     else {
-        window.location.replace("http://localhost:5000/login");
+        window.location.replace("/login");
     }
-});
-
-// load the selected encounter into the encounter panel
-$('#user-saved-encounters').on("click", '.load-encounter-btn', async function (evt) {
-    const enc_id = $(this).data('eid');
-
-    console.log(`CLICK ${enc_id}`);
-
-    const resp = await axios.get(`http://localhost:5000/api/encounters/${enc_id}`)
-
-    const heroes = resp.data.heroes
-    const monsters = resp.data.monsters
-
-    sessionStorage.setItem('stored_heroes', heroes)
-    sessionStorage.setItem('stored_monsters', monsters)
-
-    window.location.replace("http://localhost:5000/");
 });

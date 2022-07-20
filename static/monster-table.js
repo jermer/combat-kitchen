@@ -61,7 +61,7 @@ class MonsterTable {
         }
 
         // get updated monster list from the api
-        const resp = await axios.get(`http://localhost:5000/api/monsters`, { params: params });
+        const resp = await axios.get(`/api/monsters`, { params: params });
 
         // this.monsters = JSON.parse(JSON.stringify(resp.data.monsters));
         this.monsters = resp.data.monsters;

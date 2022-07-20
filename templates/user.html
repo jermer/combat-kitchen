@@ -13,20 +13,20 @@ User Page
 
 {% if user.encounters %}
 <div id="user-saved-encounters">
-{% for enc in user.encounters %}
-<p>
-<form class="inline">
-    <button type="button" data-eid="{{enc.id}}" class="btn btn-outline-primary btn-sm load-encounter-btn">
-        <i class="fa-solid fa-arrow-up-from-bracket"></i> Load
-    </button>
-    <button type="submit" formaction="/encounters/{{enc.id}}/delete" formmethod="POST"
-        class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" title="delete encounter">
-        <i class="fa-solid fa-trash-can"></i> Delete
-    </button>
-    <span class="ms-2">{{enc.summarize(100)}}</span>
-</form>
-</p>
-{% endfor %}
+    {% for enc in user.encounters %}
+    <p>
+    <form class="inline">
+        <button type="button" data-eid="{{enc.id}}" class="btn btn-outline-primary btn-sm load-encounter-btn">
+            <i class="fa-solid fa-arrow-up-from-bracket"></i> Load
+        </button>
+        <button type="submit" formaction="/encounters/{{enc.id}}/delete" formmethod="POST"
+            class="btn btn-outline-danger btn-sm" data-bs-toggle="tooltip" title="delete encounter">
+            <i class="fa-solid fa-trash-can"></i> Delete
+        </button>
+        <span class="ms-2">{{enc.summarize(100)}}</span>
+    </form>
+    </p>
+    {% endfor %}
 </div>
 
 {% else %}
@@ -35,4 +35,9 @@ User Page
 </i>
 {% endif %}
 
+{% endblock %}
+
+
+{% block scripts %}
+<script src="/static/user-page.js"></script>
 {% endblock %}

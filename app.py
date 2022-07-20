@@ -257,7 +257,7 @@ def save_entcounter(user_id):
     db.session.add(new_enc)
     db.session.commit()
 
-    response = jsonify({response: 'success'})
+    response = jsonify({'response': 'success'})
 
     response.headers.add('Access-Control-Allow-Origin', '*')
 
