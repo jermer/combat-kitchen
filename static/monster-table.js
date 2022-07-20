@@ -225,7 +225,7 @@ $("#monster-table tbody").on("click", ".monster-detail",
     async function (evt) {
         var monster_id = $(this).closest('tr').data('mid');
 
-        const resp = await axios.get(`http://localhost:5000/api/monsters/${monster_id}`)
+        const resp = await axios.get(`/api/monsters/${monster_id}`)
 
         $('#monsterModal .modal-body')
             .empty()
