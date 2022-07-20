@@ -15,3 +15,9 @@ $('#user-saved-encounters').on("click", '.load-encounter-btn', async function (e
 
     window.location.replace("/");
 });
+
+// $(document).ready(function () {
+//     // Enable tooltips
+//     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+//     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+// });

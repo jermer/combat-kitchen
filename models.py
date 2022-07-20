@@ -1,13 +1,5 @@
 """Models for Monster app."""
 
-##
-# TO DO...
-#
-# Add "legendary" actions?
-# Check for "recharge" type actions
-##
-
-
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
 import json
@@ -394,12 +386,3 @@ class Encounter(db.Model):
             response = response[:length-3] + "..."
 
         return response
-
-# class EncounterMonster(db.Model):
-#     """Model for join table between encounters and monsters"""
-
-#     __tablename__ = "encounters_monsters"
-
-#     encounter_id = db.Column( db.Integer, db.ForeignKey('encounters.id', ondelete="CASCADE") )
-#     monster_id = db.Column( db.Integer, db.ForeignKey('monsters.id'), ondelete="CASCADE" )
-#     frequency = db.Column( db.Integer, nullable=False, default=1 )

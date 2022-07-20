@@ -126,15 +126,6 @@ def get_encounter_by_id(enc_id):
     return response
 
 
-# @app.route("/monster/<monster_id>")
-# def show_monster(monster_id):
-#     """Render a monster stat sheet"""
-
-#     m = Monster.query.get_or_404(monster_id)
-
-#     return render_template('monster.html', monster=m)
-
-
 #
 # USER SIGNUP / LOGIN / LOGOUT
 #
@@ -238,7 +229,7 @@ def user_page(user_id):
 
 
 @app.route("/users/<int:user_id>/save", methods=["POST"])
-def save_entcounter(user_id):
+def save_encounter(user_id):
     """Save an encounter to the database"""
 
     if not g.user:
@@ -258,9 +249,9 @@ def save_entcounter(user_id):
     db.session.commit()
 
     response = jsonify({'response': 'success'})
-
     response.headers.add('Access-Control-Allow-Origin', '*')
 
+    flash("Encounter saved!", "success")
     return response
 
 

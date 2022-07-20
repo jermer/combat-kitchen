@@ -48,6 +48,19 @@ const ENCOUNTER_MULTIPLIERS = [
 // This is the global encounter panel
 let ENCOUNTER_PANEL;
 
+$(document).ready(function () {
+
+    // Create and initialize a new encounter panel
+    ENCOUNTER_PANEL = new EncounterPanel();
+    ENCOUNTER_PANEL.initialize();
+
+    // Enable Popovers
+    const popoverTriggerList = document.querySelectorAll('[data-bs-toggle="popover"]');
+    const popoverList = [...popoverTriggerList].map(popoverTriggerEl => new bootstrap.Popover(popoverTriggerEl));
+
+});
+
+
 /**
  * EncounterPanel class
  */
@@ -451,10 +464,9 @@ $("#encounter-monster-list").on("click", ".encounter-row-delete-btn", function (
 
 /************************************************************
  * 
- *  SAVE/LOAD ENCOUNTER
+ *  SAVE ENCOUNTER
  * 
- *  These elements handle saving/loading encounters, which
- *  require requests to the API
+ *  Saving an encounter requires a call to the API
  */
 
 // save the current encounter to the user's encounter list
@@ -462,11 +474,13 @@ $("#save-encounter-btn").on("click", async function (evt) {
     const heroes = JSON.stringify(ENCOUNTER_PANEL.heroGroups)
     const monsters = JSON.stringify(ENCOUNTER_PANEL.monsterGroups)
 
-    console.debug(`sending... ${heroes} // ${monsters}`);
+    // console.debug(`sending... ${heroes} // ${monsters}`);
 
     // add to session storage
     sessionStorage.setItem('stored_heroes', heroes)
     sessionStorage.setItem('stored_monsters', monsters)
+
+    const user_message = {message: '', category: ''};
 
     if (window.currentUser.id > 0) {
         // send to the db for long term storage
@@ -474,8 +488,21 @@ $("#save-encounter-btn").on("click", async function (evt) {
             heroes: heroes,
             monsters: monsters
         })
+        user_message.message = 'Encounter saved!'
+        user_message.category = 'success'
     }
     else {
-        window.location.replace("/login");
+        // alert that login is required to save encounters
+        user_message.message = 'Log in to save an encounter.'
+        user_message.category = 'danger'
     }
+
+    // update the user about what happened
+    $('#alert-area').append(
+        $('<div>').html(`
+        <div class="alert alert-${user_message.category} alert-dismissible">
+            ${user_message.message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        `));
 });

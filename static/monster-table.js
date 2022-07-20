@@ -3,6 +3,17 @@
 // This is the global monster table
 let MONSTER_TABLE;
 
+$(document).ready(async function () {
+    // Create and initialize a new monster table
+    MONSTER_TABLE = new MonsterTable();
+    await MONSTER_TABLE.initialize();
+
+    // Enable tooltips
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));    
+});
+
+
 /**
  *  MonsterTable class
  */
