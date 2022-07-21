@@ -268,21 +268,6 @@ class User (db.Model):
 
     encounters = db.relationship("Encounter", backref="user")
 
-    @property
-    def is_authenticated(self):
-        return self.is_active
-
-    @property
-    def is_active(self):
-        return True
-
-    @property
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return str(self.id)
-
     def __repr__(self):
         """Stringify users in a helpful way"""
 
@@ -338,11 +323,13 @@ class Encounter(db.Model):
     )
 
     # JSON string representing hero list
+    #   string is of the form "[{"num":"2","lvl":"1"},{"num":"2","lvl":"2"}]"
     heroes = db.Column(
         db.Text
     )
 
     # JSON string representing monster list
+    #   string is of the form "[{"id":72,"name":"Skeleton","cr":"1/4","xp":50,"num":2},{"id":4,"name":"Bat","cr":0,"xp":10,"num":5}]"
     monsters = db.Column(
         db.Text
     )
