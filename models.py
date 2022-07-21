@@ -1,4 +1,10 @@
-"""Models for Monster app."""
+"""
+    Models for Monster app.
+
+    Future iterations might include:
+        -- monster reactions
+        -- monster condition/damage immunity
+"""
 
 from flask_bcrypt import Bcrypt
 from flask_sqlalchemy import SQLAlchemy
