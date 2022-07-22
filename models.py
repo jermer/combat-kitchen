@@ -366,8 +366,8 @@ class Encounter(db.Model):
 
         if m_obj:
             for m in m_obj:
-                monster = Monster.query.get(m['id'])
-                response += f"{monster.name} x {m['num']}, "
+                # monster = Monster.query.get(m['id'])
+                response += f"{m['name']} x {m['num']}, "
             # trim off the closing comma and whitespace
             response = response.rstrip(', ')
 

@@ -2,7 +2,6 @@
     Monster model tests
 """
 
-from app import app
 from unittest import TestCase
 
 from models import db, Monster, SpecialAbility, Action, LegendaryAction
@@ -12,6 +11,7 @@ from models import db, Monster, SpecialAbility, Action, LegendaryAction
 import os
 os.environ["DATABASE_URL"] = "postgresql:///monsters-test"
 
+from app import app
 
 db.create_all()
 
