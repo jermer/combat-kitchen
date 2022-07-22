@@ -2,7 +2,6 @@
     Encounter model tests
 """
 
-from app import app
 from unittest import TestCase
 
 from models import db, User, Encounter
@@ -11,6 +10,8 @@ from models import db, User, Encounter
 
 import os
 os.environ["DATABASE_URL"] = "postgresql:///monsters-test"
+
+from app import app
 
 db.create_all()
 
