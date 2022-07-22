@@ -19,7 +19,7 @@ db.create_all()
 class UserModelTestCase(TestCase):
     """Test the user model"""
 
-    def setUp(self):
+    def setUp(self) -> None:
         """Create test client and add sample data."""
 
         User.query.delete()
@@ -38,9 +38,9 @@ class UserModelTestCase(TestCase):
         self.client = app.test_client()
 
     def tearDown(self):
-        res = super().tearDown()
+        resp = super().tearDown()
         db.session.rollback()
-        return res
+        return resp
 
     def test_user_model(self):
         """test the basic model"""

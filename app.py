@@ -63,13 +63,13 @@ def root():
 def get_monsters():
     """Get monsters from the database according to filters in the query string"""
 
-    min_cr = request.args['min_cr']
-    max_cr = request.args['max_cr']
+    min_cr = request.args.get('min_cr', 0)
+    max_cr = request.args.get('max_cr', 30)
 
     type = request.args.get('type', None)
     size = request.args.get('size', None)
 
-    status = request.args['status']
+    status = request.args.get('status', 'both')
 
     query = db.session.query(Monster)
 
