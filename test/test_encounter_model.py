@@ -32,6 +32,8 @@ class EncounterModelTestCase(TestCase):
 
         db.session.commit()
 
+        self.u1 = u1
+
         self.e1id = 123
         self.e2id = 234
 
