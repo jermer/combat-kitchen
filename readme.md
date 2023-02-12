@@ -29,7 +29,7 @@ The database also includes information about users to the site, requiring regist
 
 ## Technology Stack
 
-The app's front end uses HTML, CSS, and Javascript at its core, including the jQuery and Boostrap frameworks. The back end is written in Python, using the Flask web app framework and a PostgresSQL database.
+The app's front end uses HTML, CSS, and Javascript at its core, including the jQuery and Bootstrap frameworks. The back end is written in Python, using the Flask web app framework and a PostgreSQL database.
 
 ## Future Design Goals
 
